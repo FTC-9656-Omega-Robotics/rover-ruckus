@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 public class MotorAuto extends LinearOpMode {
 
-    OmegaBot robot = new OmegaBot(DcMotor.RunMode.RUN_USING_ENCODER);
+    OmegaBot robot = new OmegaBot(telemetry, hardwareMap);
 
     private int initialPos, finalPos;
 
@@ -30,11 +30,9 @@ public class MotorAuto extends LinearOpMode {
     public void runOpMode() {
 
 
-        robot.init(hardwareMap);
         telemetry.addData("Initialization", "Complete");
 
 
-        initialPos = robot.leftDrive.getCurrentPosition();
 
 
         waitForStart();
@@ -43,15 +41,15 @@ public class MotorAuto extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive() && runtime.seconds() < 0.25) {
-            robot.leftDrive.setPower(1);
+            robot.drivetrain.setVelocity(1);
         }
+        robot.drivetrain.setVelocity(0);
+        runtime.reset();
+        while(opModeIsActive() && runtime.seconds() < 0.5) {
+            robot.arm1.setPower(1);
+        }
+        robot.arm1.setPower(0);
 
-        robot.stopRobot();
-
-        finalPos = robot.leftDrive.getCurrentPosition();
-        telemetry.addData("Final position", finalPos);
-
-        telemetry.addData("Change in position", finalPos - initialPos);
 
 
     }
