@@ -9,12 +9,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import edu.spa.ftclib.internal.Robot;
 import edu.spa.ftclib.internal.activator.ServoActivator;
+import edu.spa.ftclib.internal.drivetrain.TankDrivetrain;
 
 /**
  * Hardware mapping for Rover Ruckus 2018
  */
 
-public class OmegaBot extends Robot {
+public class OmegaBotTwoWheels extends Robot {
     public DcMotor frontLeft;
     public DcMotor frontRight;
     public DcMotor backLeft;
@@ -26,12 +27,12 @@ public class OmegaBot extends Robot {
 
     DcMotor.RunMode myRunMode = DcMotor.RunMode.RUN_TO_POSITION;
     public ServoActivator teamMarkerActivator;
-    public TankDrivetrainFourWheels drivetrain;
+    public TankDrivetrain drivetrain;
 
     public static final double ARM_UP_POWER    =  0.45 ;
     public static final double ARM_DOWN_POWER  = -0.45 ;
 
-    OmegaBot(Telemetry telemetry, HardwareMap hardwareMap) {
+    OmegaBotTwoWheels(Telemetry telemetry, HardwareMap hardwareMap) {
         super(telemetry, hardwareMap);
 
         frontLeft  = hardwareMap.get(DcMotor.class,"front_left");
@@ -46,7 +47,7 @@ public class OmegaBot extends Robot {
         frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
 
-        backLeft.setDirection(DcMotor.Direction.REVERSE); //gobuilda motors are used in the back
+        backLeft.setDirection(DcMotor.Direction.REVERSE); //
         backRight.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
@@ -68,7 +69,7 @@ public class OmegaBot extends Robot {
         arm1.setMode(myRunMode);
         //arm2.setMode(myRunMode);
 
-        drivetrain = new TankDrivetrainFourWheels(frontLeft, frontRight, backLeft, backRight);
+        drivetrain = new TankDrivetrain(backLeft, backRight);
 
         teamMarkerActivator = new ServoActivator(teamMarker, 0.9, 0.5);
 

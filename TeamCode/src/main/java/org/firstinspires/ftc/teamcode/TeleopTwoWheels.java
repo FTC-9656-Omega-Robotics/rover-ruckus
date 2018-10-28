@@ -15,11 +15,11 @@ import edu.spa.ftclib.sample.TestClass;
  *
  */
 
-@TeleOp(name = "Teleop", group = "prototype")
+@TeleOp(name = "TeleopTwoWheels", group = "prototype")
 
-public class Teleop extends OpMode {
+public class TeleopTwoWheels extends OpMode {
 
-    private OmegaBot robot;
+    private OmegaBotTwoWheels robot;
 
     private ToggleBoolean toggleBoolean = new ToggleBoolean();
     private ToggleBoolean driveMode = new ToggleBoolean();
@@ -27,7 +27,9 @@ public class Teleop extends OpMode {
 
     @Override
     public void init() {
-        robot = new OmegaBot(telemetry, hardwareMap);
+       robot = new OmegaBotTwoWheels(telemetry, hardwareMap);
+       robot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+       robot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -47,31 +49,22 @@ public class Teleop extends OpMode {
         }
         if(gamepad1.a) {
             time.reset();
-            robot.arm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while(time.seconds() < 1) {
-                robot.arm1.setPower(1);
+            while(time.seconds() < 2) {
+                robot.rack.setPower(1);
             }
-            robot.arm1.setPower(0);
         }
         if(gamepad1.b) {
             time.reset();
-            robot.arm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            while(time.seconds() < 1) {
-                robot.arm1.setPower(-1);
+            while(time.seconds() < 2) {
+                robot.rack.setPower(-1);
             }
-            robot.arm1.setPower(0);
         }
-        if(gamepad1.left_bumper) {
-            robot.drivetrain.setTargetPosition(1000);
-            robot.drivetrain.setVelocity(1);
-        }
-        if(!robot.drivetrain.isPositioning()) {
-            robot.drivetrain.setVelocity(0);
-        }
+        robot.backLeft.setPower(gamepad1.left_stick_y);
+        robot.backRight.setPower(gamepad1.right_stick_y);
 
         telemetry.addData("arm pos", robot.arm1.getCurrentPosition());
-        telemetry.addData("front_left pos", robot.frontLeft.getCurrentPosition());
-        telemetry.addData("front_right pos", robot.frontRight.getCurrentPosition());
+        telemetry.addData("back_left pos", robot.backLeft.getCurrentPosition());
+        telemetry.addData("back_right pos", robot.backRight.getCurrentPosition());
     }
 
     private double absMax(double a, double b) { //Returns the argument whose absolute value is greater (similar to Math.max() but compares absolute values)

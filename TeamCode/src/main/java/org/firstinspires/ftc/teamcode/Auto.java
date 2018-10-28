@@ -12,45 +12,35 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "MotorAuto", group = "Testers")
+@Autonomous(name = "Auto", group = "Testers")
 //@Disabled
 
-public class MotorAuto extends LinearOpMode {
+public class Auto extends LinearOpMode {
 
-    OmegaBot robot = new OmegaBot(telemetry, hardwareMap);
+    OmegaBotTwoWheels robot = new OmegaBotTwoWheels(telemetry, hardwareMap);
 
     private int initialPos, finalPos;
 
-    private ElapsedTime     runtime = new ElapsedTime();
-
-
+    private ElapsedTime runtime = new ElapsedTime();
 
 
     @Override
     public void runOpMode() {
-
-
         telemetry.addData("Initialization", "Complete");
 
-
-
-
         waitForStart();
-
-        telemetry.addData("Initial position", initialPos);
         runtime.reset();
+        robot.rack.setPower(1);
+        sleep(2000);
+        robot.rack.setPower(0);
+        robot.drivetrain.setTargetPosition(-3000);
+        robot.drivetrain.setVelocity(-1);
+        while (opModeIsActive() && robot.drivetrain.isPositioning()) {
 
-        while (opModeIsActive() && runtime.seconds() < 0.25) {
-            robot.drivetrain.setVelocity(1);
         }
-        robot.drivetrain.setVelocity(0);
-        runtime.reset();
-        while(opModeIsActive() && runtime.seconds() < 0.5) {
-            robot.arm1.setPower(1);
-        }
-        robot.arm1.setPower(0);
-
-
+        robot.rack.setPower(-1);
+        sleep(2000);
+        robot.rack.setPower(0);
 
     }
 }
