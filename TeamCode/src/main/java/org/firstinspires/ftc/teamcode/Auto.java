@@ -17,7 +17,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 public class Auto extends LinearOpMode {
 
-    OmegaBotTwoWheels robot = new OmegaBotTwoWheels(telemetry, hardwareMap);
 
     private int initialPos, finalPos;
 
@@ -26,6 +25,9 @@ public class Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        OmegaBotTwoWheels robot = new OmegaBotTwoWheels(telemetry, hardwareMap);
+        robot.rack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rack.setDirection(DcMotor.Direction.REVERSE);
         telemetry.addData("Initialization", "Complete");
 
         waitForStart();
@@ -33,14 +35,21 @@ public class Auto extends LinearOpMode {
         robot.rack.setPower(1);
         sleep(2000);
         robot.rack.setPower(0);
-        robot.drivetrain.setTargetPosition(-3000);
-        robot.drivetrain.setVelocity(-1);
-        while (opModeIsActive() && robot.drivetrain.isPositioning()) {
+        robot.drivetrain.setTargetPosition(-4000);
+        robot.backLeft.setPower(-0.35);
+        robot.backRight.setPower(-0.95);
+        while (robot.drivetrain.isPositioning()) {
 
         }
         robot.rack.setPower(-1);
         sleep(2000);
         robot.rack.setPower(0);
-
+        robot.drivetrain.setRotation(-Math.PI / 2);
+        sleep(3000);
+//        robot.drivetrain.setTargetPosition(10000);
+//       robot.backLeft.setPower(-0.35);
+//       robot.backRight.setPower(-1);
+//        sleep(1000);
+        robot.drivetrain.setVelocity(0);
     }
 }

@@ -38,7 +38,9 @@ public class TeleopTwoWheels extends OpMode {
     @Override
     public void loop() {
         robot.arm1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rack.setPower(0);
         if(!robot.arm1.isBusy()){ robot.arm1.setPower(0);}
+
         if(gamepad1.x) {
             robot.arm1.setTargetPosition(robot.arm1.getCurrentPosition() + 500);
             robot.arm1.setPower(0.5);
@@ -47,20 +49,28 @@ public class TeleopTwoWheels extends OpMode {
             robot.arm1.setTargetPosition(robot.arm1.getCurrentPosition() - 500);
             robot.arm1.setPower(-0.5);
         }
+        while(gamepad1.dpad_up) {
+            robot.rack.setPower(1);
+        }
+        while(gamepad1.dpad_down) {
+            robot.rack.setPower(-1);
+        }
         if(gamepad1.a) {
             time.reset();
             while(time.seconds() < 2) {
                 robot.rack.setPower(1);
             }
+            robot.rack.setPower(0);
         }
         if(gamepad1.b) {
             time.reset();
             while(time.seconds() < 2) {
                 robot.rack.setPower(-1);
             }
+            robot.rack.setPower(0);
         }
-        robot.backLeft.setPower(gamepad1.left_stick_y);
-        robot.backRight.setPower(gamepad1.right_stick_y);
+        robot.backLeft.setPower(-0.35 * gamepad1.left_stick_y); //pushing a gamepad joystick forward on d-mode gives a negative value, so we must invert it
+        robot.backRight.setPower(-0.95 * gamepad1.right_stick_y);
 
         telemetry.addData("arm pos", robot.arm1.getCurrentPosition());
         telemetry.addData("back_left pos", robot.backLeft.getCurrentPosition());

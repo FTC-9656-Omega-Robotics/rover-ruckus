@@ -50,6 +50,9 @@ public class OmegaBotTwoWheels extends Robot {
         backLeft.setDirection(DcMotor.Direction.REVERSE); //
         backRight.setDirection(DcMotor.Direction.FORWARD);
 
+        rack.setDirection(DcMotor.Direction.REVERSE);
+        arm1.setDirection(DcMotor.Direction.FORWARD);
+
         // Set all motors to zero power
         frontLeft.setPower(0);
         frontRight.setPower(0);
@@ -65,7 +68,7 @@ public class OmegaBotTwoWheels extends Robot {
         frontRight.setMode(myRunMode);
         backLeft.setMode(myRunMode);
         backRight.setMode(myRunMode);
-        rack.setMode(myRunMode);
+        rack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm1.setMode(myRunMode);
         //arm2.setMode(myRunMode);
 
