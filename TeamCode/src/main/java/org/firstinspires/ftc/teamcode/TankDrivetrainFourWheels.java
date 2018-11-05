@@ -7,7 +7,6 @@ import edu.spa.ftclib.internal.drivetrain.Positionable;
 import edu.spa.ftclib.internal.drivetrain.Rotatable;
 
 /**
- *
  * A simple drivetrain with four wheels.
  */
 
@@ -24,6 +23,7 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
 
     /**
      * The constructor for the class.
+     *
      * @param motors the array of motors that you give the constructor so that it can find the hardware
      */
     public TankDrivetrainFourWheels(DcMotor[] motors) { //motors are numbered clockwise starting with front left
@@ -35,11 +35,10 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
     }
 
     public TankDrivetrainFourWheels(DcMotor motor1, DcMotor motor2, DcMotor motor3, DcMotor motor4) {
-        this(new DcMotor[] {motor1, motor2, motor3, motor4});
+        this(new DcMotor[]{motor1, motor2, motor3, motor4});
     }
 
     /**
-     *
      * @param rotation the velocity that you want to rotate the robot by.
      *                 Counterclockwise is positive and clockwise is negative.
      *                 Zero is if you don't want to rotate the robot.
@@ -51,7 +50,6 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
     }
 
     /**
-     *
      * @return the rotation velocity the robot was given.
      */
     @Override
@@ -61,12 +59,15 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
 
     /**
      * Calculates the motor powers. It combines the velocity you gave it and the rotation that you gave it
+     *
      * @return the motorPowers array, which will then be sent to the motors to tell them how fast to move
      */
     protected double[] calculateMotorPowers() {
-        double[] motorPowers = new double[2]; //create a new array to hold the motor powers
-        motorPowers[0] = getVelocity()-rotation; //calculate the motor power for the left wheel
-        motorPowers[1] = getVelocity()+rotation; //calculate the motor power for the right wheel
+        double[] motorPowers = new double[4]; //create a new array to hold the motor powers
+        motorPowers[0] = getVelocity() - rotation; //calculate the motor power for the left wheel
+        motorPowers[1] = getVelocity() + rotation; //calculate the motor power for the right wheel
+        motorPowers[2] = motorPowers[1];
+        motorPowers[3] = motorPowers[0];
         return motorPowers;
     }
 
@@ -82,9 +83,19 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
         for (DcMotor motor : motors) motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         for (DcMotor motor : motors) motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         for (int i = 0; i < motors.length; i++) {   //Calculate how far each wheel has to go to get the drivetrain to a specific position
-            wheelTargetPositions[0] = targetPosition*(1-rotation);
-            wheelTargetPositions[1] = targetPosition * (1+rotation);
-            motors[i].setTargetPosition((int)(wheelTargetPositions[i]+0.5));    //Round to the nearest int because setTargetPosition only accepts ints
+            wheelTargetPositions[0] = targetPosition * (1 - rotation);
+            wheelTargetPositions[1] = targetPosition * (1 + rotation);
+
+            switch (i) {
+                case 2:
+                    motors[2].setTargetPosition((int) (wheelTargetPositions[1] + 0.5));//Round to the nearest int because setTargetPosition only accepts ints
+                    break;
+                case 3:
+                    motors[3].setTargetPosition((int)(wheelTargetPositions[0] + 0.5));
+                    break;
+                default:
+                    motors[i].setTargetPosition((int)(wheelTargetPositions[i] + 0.5));
+            }
         }
         updateMotorPowers();
     }
@@ -94,7 +105,7 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
      */
     @Override
     public double getCurrentPosition() {
-        return (motors[0].getCurrentPosition() + motors[1].getCurrentPosition())/2; //takes an avg of the encoder values for the two front wheels
+        return (motors[0].getCurrentPosition() + motors[1].getCurrentPosition()) / 2; //takes an avg of the encoder values for the two front wheels
     }
 
     /**
@@ -140,6 +151,7 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
 
     /**
      * Depending on the encoder type, the number of ticks per rotation can vary. This method uses motor configuration data to calculate that number.
+     *
      * @return the number of encoder ticks per rotation
      */
     @Override
