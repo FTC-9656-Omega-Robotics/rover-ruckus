@@ -24,6 +24,7 @@ public class Teleop extends OpMode {
     private ToggleBoolean toggleBoolean = new ToggleBoolean();
     private ToggleBoolean driveMode = new ToggleBoolean();
     private ElapsedTime time = new ElapsedTime();
+    double speedDamper = 1;
 
     @Override
     public void init() {
@@ -37,11 +38,17 @@ public class Teleop extends OpMode {
     public void loop() {
         robot.setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        robot.frontLeft.setPower(gamepad1.left_stick_y);
-        robot.backLeft.setPower(gamepad1.left_stick_y);
+        robot.frontLeft.setPower(speedDamper * gamepad1.left_stick_y);
+        robot.backLeft.setPower(speedDamper * gamepad1.left_stick_y);
 
-        robot.frontRight.setPower(gamepad1.right_stick_y);
-        robot.backRight.setPower(gamepad1.right_stick_y);
+        robot.frontRight.setPower(speedDamper * gamepad1.right_stick_y);
+        robot.backRight.setPower(speedDamper * gamepad1.right_stick_y);
+
+        if(gamepad1.left_bumper && gamepad1.right_bumper) {
+            speedDamper = 0.4;
+        } else {
+            speedDamper = 1;
+        }
 
         if(gamepad1.a) {
             robot.moveForward100();
