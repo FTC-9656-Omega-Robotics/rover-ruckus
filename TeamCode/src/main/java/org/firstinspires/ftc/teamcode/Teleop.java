@@ -43,6 +43,7 @@ public class Teleop extends OpMode {
 
         robot.frontRight.setPower(speedDamper * gamepad1.right_stick_y);
         robot.backRight.setPower(speedDamper * gamepad1.right_stick_y);
+        robot.intake.setPower(gamepad2.left_stick_y);
 
         if(gamepad1.left_bumper && gamepad1.right_bumper) {
             speedDamper = 0.4;

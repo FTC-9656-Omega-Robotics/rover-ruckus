@@ -20,6 +20,7 @@ public class OmegaBot extends Robot {
     public DcMotor backLeft;
     public DcMotor backRight;
     public DcMotor rack;
+    public DcMotor intake;
 //    public DcMotor arm1;
     //public DcMotor arm2;
     public Servo teamMarker;
@@ -39,6 +40,8 @@ public class OmegaBot extends Robot {
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
         backRight = hardwareMap.get(DcMotor.class, "back_right");
         rack = hardwareMap.get(DcMotor.class, "rack");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+
 //        arm1 = hardwareMap.get(DcMotor.class, "arm1");
         //arm2 = hardwareMap.get(DcMotor.class, "arm2");
         teamMarker = hardwareMap.get(Servo.class, "team_marker");
@@ -55,6 +58,7 @@ public class OmegaBot extends Robot {
         backLeft.setPower(0);
         backRight.setPower(0);
         rack.setPower(0);
+        intake.setPower(0);
 //        arm1.setPower(0);
         //arm2.setPower(0);
 
@@ -62,6 +66,7 @@ public class OmegaBot extends Robot {
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         setDrivetrainToMode(myRunMode);
         rack.setMode(myRunMode);
+        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        arm1.setMode(myRunMode);
         //arm2.setMode(myRunMode);
 
