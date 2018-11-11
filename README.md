@@ -7,6 +7,8 @@ If you've already done some of the following, then there's no need to repeat. Ju
 1. Download and install Android Studio.
 1. Open Android Studio.
 1. Select "Check out from version control."
+1. If you want, you can change the location of where the FTC repo will be downloaded to. The default is into `~/StudioProjects`.
+`~` is programmer shorthand for your Home folder.
 1. Paste in this link https://gitlab.com/ftc-9656/rover-ruckus.git
 1. Enter in your Gitlab credentials.
 1. Select "Set up as an Android Project"
@@ -29,7 +31,11 @@ To fix HOMAR, do (instructions copied from HOMAR Github page)
 1. Click on `Git: …` at the bottom-right of the Android Studio window, then click `HOMAR-FTC-Library`
 1. Click on `Master` under `Local Branches`, then click `Checkout`
 1. Test by opening `TestOpMode.java` in `TeamCode/java/org.firstinspires.ftc.teamcode` (or wherever your store your op-modes) and verifying that there are no import errors
-1. Try to commit and try to update — neither should detect any changes
+
+To set up your own git branch (we never edit directly on master) after doing all the above
+1. Open Terminal.
+1. Make sure you're at the project folder (your commandline path should be `~/StudioProjectsOrWhereYouPutYourFTC/rover-ruckus`
+1. Run `git checkout -b yourNameHere` , substituting in your name.
 
 ### Some quick briefing
 1. Gradle is software used by an app to retrieve smaller bits of software it needs to run.
