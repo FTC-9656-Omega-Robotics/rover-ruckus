@@ -25,31 +25,22 @@ public class Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        OmegaBotTwoWheels robot = new OmegaBotTwoWheels(telemetry, hardwareMap);
-        robot.rack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rack.setDirection(DcMotor.Direction.REVERSE);
+        OmegaBot robot = new OmegaBot(telemetry, hardwareMap);
+        robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lift.setDirection(DcMotor.Direction.REVERSE);
+        robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
         telemetry.addData("Initialization", "Complete");
-
+        telemetry.addData("front_left", robot.frontLeft.getCurrentPosition());
+        telemetry.addData("front_right", robot.frontRight.getCurrentPosition());
+        telemetry.addData("back_left", robot.backLeft.getCurrentPosition());
+        telemetry.addData("back_right", robot.backRight.getCurrentPosition());
+        telemetry.update();
         waitForStart();
         runtime.reset();
-        robot.rack.setPower(1);
-        sleep(2000);
-        robot.rack.setPower(0);
-        robot.drivetrain.setTargetPosition(-4000);
-        robot.backLeft.setPower(-0.35);
-        robot.backRight.setPower(-0.95);
-        while (robot.drivetrain.isPositioning()) {
-
+        robot.move(50, 0.3);
+        while(opModeIsActive()) {
+            telemetry.update();
         }
-        robot.rack.setPower(-1);
-        sleep(2000);
-        robot.rack.setPower(0);
-        robot.drivetrain.setRotation(-Math.PI / 2);
-        sleep(3000);
-//        robot.drivetrain.setTargetPosition(10000);
-//       robot.backLeft.setPower(-0.35);
-//       robot.backRight.setPower(-1);
-//        sleep(1000);
-        robot.drivetrain.setVelocity(0);
     }
 }

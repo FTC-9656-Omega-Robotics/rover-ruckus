@@ -29,6 +29,8 @@ public class Teleop extends OpMode {
     @Override
     public void init() {
         robot = new OmegaBot(telemetry, hardwareMap);
+        robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     /**
@@ -57,11 +59,14 @@ public class Teleop extends OpMode {
             robot.moveBackward100();
         }
 
+        robot.lift.setPower(gamepad2.left_stick_y);
+
        // telemetry.addData("arm pos", robot.arm1.getCurrentPosition());
         telemetry.addData("front_left pos", robot.frontLeft.getCurrentPosition());
         telemetry.addData("front_right pos", robot.frontRight.getCurrentPosition());
         telemetry.addData("back_left pos", robot.backLeft.getCurrentPosition());
         telemetry.addData("back_right pos", robot.backRight.getCurrentPosition());
+        telemetry.addData("lift", robot.lift.getCurrentPosition());
     }
 
     private double absMax(double a, double b) { //Returns the argument whose absolute value is greater (similar to Math.max() but compares absolute values)

@@ -19,14 +19,18 @@ public class OmegaBot extends Robot {
     public DcMotor frontRight;
     public DcMotor backLeft;
     public DcMotor backRight;
-    public DcMotor rack;
-//    public DcMotor arm1;
+    public DcMotor lift;
+//    public DcMotor pivot;
     //public DcMotor arm2;
     public Servo teamMarker;
 
     DcMotor.RunMode myRunMode = DcMotor.RunMode.RUN_TO_POSITION;
     public ServoActivator teamMarkerActivator;
     public TankDrivetrainFourWheels drivetrain;
+
+    //4 inch wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1)
+    private final double ticksPerInch = (1120 / 2) / (2 * Math.PI * 2);
+
 
     public static final double ARM_UP_POWER    =  0.45 ;
     public static final double ARM_DOWN_POWER  = -0.45 ;
@@ -38,8 +42,8 @@ public class OmegaBot extends Robot {
         frontRight = hardwareMap.get(DcMotor.class,"front_right");
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
         backRight = hardwareMap.get(DcMotor.class, "back_right");
-        rack = hardwareMap.get(DcMotor.class, "rack");
-//        arm1 = hardwareMap.get(DcMotor.class, "arm1");
+        lift = hardwareMap.get(DcMotor.class, "lift");
+        // arm1 = hardwareMap.get(DcMotor.class, "arm1");
         //arm2 = hardwareMap.get(DcMotor.class, "arm2");
         teamMarker = hardwareMap.get(Servo.class, "team_marker");
 
@@ -54,14 +58,14 @@ public class OmegaBot extends Robot {
         frontRight.setPower(0);
         backLeft.setPower(0);
         backRight.setPower(0);
-        rack.setPower(0);
+        lift.setPower(0);
 //        arm1.setPower(0);
         //arm2.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         setDrivetrainToMode(myRunMode);
-        rack.setMode(myRunMode);
+        lift.setMode(myRunMode);
 //        arm1.setMode(myRunMode);
         //arm2.setMode(myRunMode);
 
@@ -98,6 +102,20 @@ public class OmegaBot extends Robot {
         }
         drivetrain.setVelocity(0);
         setDrivetrainToMode(originalMode); //revert to original mode once done
+    }
+
+    public void move(int inches, double velocity) {
+        DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
+        setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drivetrain.setTargetPosition(ticksPerInch * inches);
+        drivetrain.setVelocity(velocity);
+        while(drivetrain.isPositioning()) {
+            telemetry.update();
+        }
+        drivetrain.setVelocity(0);
+        setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDrivetrainToMode(originalMode);
     }
 
     /**
