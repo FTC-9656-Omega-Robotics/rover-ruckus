@@ -59,7 +59,26 @@ public class Teleop extends OpMode {
             robot.moveBackward100();
         }
 
-        robot.lift.setPower(gamepad2.left_stick_y);
+        robot.pivot.setPower(gamepad2.left_stick_y);
+        robot.arm.setPower(gamepad2.right_stick_y*.7);
+
+        if(gamepad2.dpad_down){
+            robot.lift.setPower(1);
+        }
+
+        if(gamepad2.dpad_up){
+            robot.lift.setPower(-1);
+        }
+
+        if(gamepad2.y){
+            robot.intake.setPower(1);
+        }
+
+        if(gamepad2.a){
+            robot.intake.setPower(-1);
+        }
+
+
 
        // telemetry.addData("arm pos", robot.arm1.getCurrentPosition());
         telemetry.addData("front_left pos", robot.frontLeft.getCurrentPosition());
