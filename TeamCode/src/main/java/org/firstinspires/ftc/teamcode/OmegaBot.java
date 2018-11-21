@@ -19,6 +19,9 @@ public class OmegaBot extends Robot {
     public DcMotor frontRight;
     public DcMotor backLeft;
     public DcMotor backRight;
+    public DcMotor intake;
+    public DcMotor pivot;
+    public DcMotor arm;
     public DcMotor lift;
 //    public DcMotor pivot;
     //public DcMotor arm2;
@@ -30,6 +33,7 @@ public class OmegaBot extends Robot {
 
     //4 inch wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1)
     private final double ticksPerInch = (1120 / 2) / (2 * Math.PI * 2);
+    private final double ticksPerDegree = 22*1120/(8*360);//22*pi is the approximated turning circumference, multiplying that by ticks/inch , dividing by 360 degrees
 
 
     public static final double ARM_UP_POWER    =  0.45 ;
@@ -42,6 +46,10 @@ public class OmegaBot extends Robot {
         frontRight = hardwareMap.get(DcMotor.class,"front_right");
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
         backRight = hardwareMap.get(DcMotor.class, "back_right");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        pivot = hardwareMap.get(DcMotor.class, "pivot");
+        arm = hardwareMap.get(DcMotor.class, "arm");
+
         lift = hardwareMap.get(DcMotor.class, "lift");
         // arm1 = hardwareMap.get(DcMotor.class, "arm1");
         //arm2 = hardwareMap.get(DcMotor.class, "arm2");
@@ -116,6 +124,56 @@ public class OmegaBot extends Robot {
         drivetrain.setVelocity(0);
         setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDrivetrainToMode(originalMode);
+    }
+
+    //This method makes the robot turn right
+    public void turn(int degrees, double velocity){
+        DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
+
+        //Resets encoder values
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //Sets target position; left motor moves forward while right motor moves backward
+        frontLeft.setTargetPosition((int)(ticksPerDegree*degrees+.5));
+        backLeft.setTargetPosition((int)(ticksPerDegree*degrees+.5));
+        frontRight.setTargetPosition(-1*(int)(ticksPerDegree*degrees+.5));
+        backRight.setTargetPosition(-1*(int)(ticksPerDegree*degrees+.5));
+
+        //Run to position
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        frontLeft.setPower(velocity);
+        backLeft.setPower(velocity);
+        frontRight.setPower(velocity);
+        backRight.setPower(velocity);
+
+        //While the motors are still running, no other code will run
+        while(frontRight.isBusy()&&frontLeft.isBusy()&&backRight.isBusy()&&backLeft.isBusy())
+        {
+            telemetry.update();
+        }
+
+        //Stops the turn
+        //frontLeft.setPower(0);
+        //backLeft.setPower(0);
+        //frontRight.setPower(0);
+        //backRight.setPower(0);
+
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeft.setMode(originalMode);
+        backLeft.setMode(originalMode);
+        frontRight.setMode(originalMode);
+        backRight.setMode(originalMode);
     }
 
     /**
