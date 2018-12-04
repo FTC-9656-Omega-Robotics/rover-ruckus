@@ -8,17 +8,14 @@ import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Auto", group = "Testers")
+@Autonomous(name = "Auto_Turn360", group = "Testers")
 //@Disabled
 
-public class Auto extends LinearOpMode {
+public class Auto_Turn360 extends LinearOpMode {
 
 
     private int initialPos, finalPos;
@@ -55,31 +52,13 @@ public class Auto extends LinearOpMode {
         telemetry.addData("IsAligned", detector.getAligned()); // Is the bot aligned with the gold mineral?
         telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
         telemetry.addData("Initialization", "Complete");
+        sleep(100);
         //Determine location of gold cube (threshold radius of 20) and
-        waitForStart();
         int x = (int) detector.getXPosition();
         detector.disable();
+        waitForStart();
         runtime.reset();
-
-        int liftMaxHeight = 18100;
-        robot.lift.setTargetPosition(-liftMaxHeight);
-        robot.lift.setPower(-1);
-        while (opModeIsActive() && robot.lift.isBusy() && robot.lift.getCurrentPosition() < liftMaxHeight) {
-            telemetry.addData("lift", robot.lift.getCurrentPosition());
-            telemetry.update();
-        }
-        robot.lift.setPower(0);
-        robot.move(0.5 * Math.sqrt(72), robotSpeed);
-        //Choose corresponding path
-        goldCenter();
-//        if (70 < x && x < 130) {
-//            goldCenter();
-//        } else if (285 < x && x < 345) {
-//            goldRight();
-//        } else {
-//            goldLeft();
-//        }
-//        finishPath();
+        robot.turn(360,0.3);
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
@@ -93,7 +72,7 @@ public class Auto extends LinearOpMode {
     }
 
     public void goldCenter() {
-        robot.move(7.5 * Math.sqrt(72), robotSpeed);
+        robot.move(7.5 * Math.sqrt(72), 1);
     }
 
     public void goldRight() {

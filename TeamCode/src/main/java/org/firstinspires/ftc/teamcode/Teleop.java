@@ -23,14 +23,20 @@ public class Teleop extends OpMode {
 
     private ToggleBoolean toggleBoolean = new ToggleBoolean();
     private ToggleBoolean driveMode = new ToggleBoolean();
+    private Toggle gamepad2LeftBumper = new Toggle();
+    private Toggle gamepad2RightBumper = new Toggle();
+    private Toggle gamepad2LeftTrigger = new Toggle();
+    private Toggle gamepad2RightTrigger = new Toggle();
+
     private ElapsedTime time = new ElapsedTime();
-    double speedDamper = 1;
+    double speedDamper = 0.4;
 
     @Override
     public void init() {
         robot = new OmegaBot(telemetry, hardwareMap);
         robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -38,49 +44,68 @@ public class Teleop extends OpMode {
      */
     @Override
     public void loop() {
+        if (gamepad2.left_bumper) {
+            gamepad2LeftBumper.toggle();
+        }
+        if (gamepad2.right_bumper) {
+            gamepad2RightBumper.toggle();
+        }
+        if (gamepad2.left_trigger > 0.2) {
+            gamepad2LeftTrigger.toggle();
+        }
+        if (gamepad2.right_trigger > 0.2) {
+            gamepad2RightTrigger.toggle();
+        }
         robot.setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        robot.frontLeft.setPower(speedDamper * gamepad1.left_stick_y);
-        robot.backLeft.setPower(speedDamper * gamepad1.left_stick_y);
+        robot.frontLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
+        robot.backLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
 
-        robot.frontRight.setPower(speedDamper * gamepad1.right_stick_y);
-        robot.backRight.setPower(speedDamper * gamepad1.right_stick_y);
+        robot.frontRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
+        robot.backRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
 
-        if(gamepad1.left_bumper && gamepad1.right_bumper) {
-            speedDamper = 0.4;
+        if(gamepad1.dpad_up) {
+            robot.turn(360, 0.5);
+        } else if (gamepad1.dpad_down) {
+            robot.move(12, 0.5);
+        }
+        if (gamepad1.left_bumper && gamepad1.right_bumper) {
+            speedDamper = 0.8;
         } else {
-            speedDamper = 1;
+            speedDamper = 0.4;
         }
 
-        if(gamepad1.a) {
-            robot.moveForward100();
-        }
-        if(gamepad1.b) {
-            robot.moveBackward100();
-        }
 
-        robot.pivot.setPower(gamepad2.left_stick_y);
-        robot.arm.setPower(gamepad2.right_stick_y*.7);
-
-        if(gamepad2.dpad_down){
-            robot.lift.setPower(1);
-        }
-
-        if(gamepad2.dpad_up){
+        //gamepad2 will have all the special mechanisms
+        if (gamepad2.dpad_up) {
             robot.lift.setPower(-1);
+        } else if (gamepad2.dpad_down) {
+            robot.lift.setPower(1);
+        } else {
+            robot.lift.setPower(0);
         }
 
-        if(gamepad2.y){
-            robot.intake.setPower(1);
+        if (gamepad2LeftBumper.output()) {
+            robot.leftIntake.setPower(0.9);
+        } else if (gamepad2LeftTrigger.output()) {
+            robot.leftIntake.setPower(-0.9);
+        } else {
+            robot.leftIntake.setPower(0);
         }
 
-        if(gamepad2.a){
-            robot.intake.setPower(-1);
+        if (gamepad2RightBumper.output()) {
+            robot.rightIntake.setPower(0.9);
+        } else if (gamepad2RightTrigger.output()) {
+            robot.rightIntake.setPower(-0.9);
+        } else {
+            robot.rightIntake.setPower(0);
         }
 
+        robot.pivot.setPower(-gamepad2.left_stick_y);
+        robot.arm.setPower(-gamepad2.right_stick_y);
 
 
-       // telemetry.addData("arm pos", robot.arm1.getCurrentPosition());
+        // telemetry.addData("arm pos", robot.arm1.getCurrentPosition());
         telemetry.addData("front_left pos", robot.frontLeft.getCurrentPosition());
         telemetry.addData("front_right pos", robot.frontRight.getCurrentPosition());
         telemetry.addData("back_left pos", robot.backLeft.getCurrentPosition());

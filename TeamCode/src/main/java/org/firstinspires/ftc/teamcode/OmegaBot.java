@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -23,8 +24,11 @@ public class OmegaBot extends Robot {
     public DcMotor pivot;
     public DcMotor arm;
     public DcMotor lift;
-//    public DcMotor pivot;
-    //public DcMotor arm2;
+
+    public CRServo leftIntake;
+    public CRServo rightIntake;
+    public Servo leftFlip;
+    public Servo rightFlip;
     public Servo teamMarker;
 
     DcMotor.RunMode myRunMode = DcMotor.RunMode.RUN_TO_POSITION;
@@ -33,7 +37,7 @@ public class OmegaBot extends Robot {
 
     //4 inch wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1)
     private final double ticksPerInch = (1120 / 2) / (2 * Math.PI * 2);
-    private final double ticksPerDegree = 22*1120/(8*360);//22*pi is the approximated turning circumference, multiplying that by ticks/inch , dividing by 360 degrees
+    private final double ticksPerDegree = 24.7*1120/(8*360);//22*pi is the approximated turning circumference, multiplying that by ticks/inch , dividing by 360 degrees
 
 
     public static final double ARM_UP_POWER    =  0.45 ;
@@ -51,8 +55,10 @@ public class OmegaBot extends Robot {
         arm = hardwareMap.get(DcMotor.class, "arm");
 
         lift = hardwareMap.get(DcMotor.class, "lift");
-        // arm1 = hardwareMap.get(DcMotor.class, "arm1");
-        //arm2 = hardwareMap.get(DcMotor.class, "arm2");
+        leftIntake = hardwareMap.get(CRServo.class, "left_intake");
+        rightIntake = hardwareMap.get(CRServo.class, "right_intake");
+        leftFlip = hardwareMap.get(Servo.class, "left_flip");
+        rightFlip = hardwareMap.get(Servo.class, "right_flip");
         teamMarker = hardwareMap.get(Servo.class, "team_marker");
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
@@ -60,6 +66,8 @@ public class OmegaBot extends Robot {
 
         backLeft.setDirection(DcMotor.Direction.REVERSE); //
         backRight.setDirection(DcMotor.Direction.FORWARD);
+
+        lift.setDirection(DcMotor.Direction.REVERSE);
 
         // Set all motors to zero power
         frontLeft.setPower(0);
@@ -73,6 +81,7 @@ public class OmegaBot extends Robot {
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         setDrivetrainToMode(myRunMode);
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
 //        arm1.setMode(myRunMode);
         //arm2.setMode(myRunMode);
@@ -112,7 +121,7 @@ public class OmegaBot extends Robot {
         setDrivetrainToMode(originalMode); //revert to original mode once done
     }
 
-    public void move(int inches, double velocity) {
+    public void move(double inches, double velocity) {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
         setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -126,8 +135,8 @@ public class OmegaBot extends Robot {
         setDrivetrainToMode(originalMode);
     }
 
-    //This method makes the robot turn right
-    public void turn(int degrees, double velocity){
+    //This method makes the robot turn clockwise
+    public void turn(double degrees, double velocity){
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
 
         //Resets encoder values
@@ -137,10 +146,10 @@ public class OmegaBot extends Robot {
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Sets target position; left motor moves forward while right motor moves backward
-        frontLeft.setTargetPosition((int)(ticksPerDegree*degrees+.5));
-        backLeft.setTargetPosition((int)(ticksPerDegree*degrees+.5));
-        frontRight.setTargetPosition(-1*(int)(ticksPerDegree*degrees+.5));
-        backRight.setTargetPosition(-1*(int)(ticksPerDegree*degrees+.5));
+        frontLeft.setTargetPosition((int)(ticksPerDegree * degrees));
+        backLeft.setTargetPosition((int)(ticksPerDegree * degrees));
+        frontRight.setTargetPosition(-1*(int)(ticksPerDegree * degrees));
+        backRight.setTargetPosition(-1*(int)(ticksPerDegree * degrees));
 
         //Run to position
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
