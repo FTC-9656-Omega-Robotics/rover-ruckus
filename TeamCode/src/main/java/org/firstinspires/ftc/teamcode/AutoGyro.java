@@ -7,19 +7,15 @@ package org.firstinspires.ftc.teamcode;
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Auto", group = "Testers")
+@Autonomous(name = "AutoGyro", group = "Testers")
 //@Disabled
 
-public class Auto extends LinearOpMode {
+public class AutoGyro extends LinearOpMode {
 
 
     private int initialPos, finalPos;
@@ -36,19 +32,19 @@ public class Auto extends LinearOpMode {
         robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-//        //GYRO SETUP
-//
-//
-//        // make sure the imu gyro is calibrated before continuing.
-//        while (!isStopRequested() && !robot.imu.isGyroCalibrated())
-//        {
-//            sleep(50);
-//            idle();
-//        }
-//
-//        telemetry.addData("Mode", "waiting for start");
-//        telemetry.addData("imu calib status", robot.imu.getCalibrationStatus().toString());
-//        telemetry.update();
+        //GYRO SETUP
+
+
+        // make sure the imu gyro is calibrated before continuing.
+        while (!isStopRequested() && !robot.imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status", robot.imu.getCalibrationStatus().toString());
+        telemetry.update();
 
         // Set up detector
         detector = new GoldAlignDetector(); // Create detector
@@ -77,47 +73,33 @@ public class Auto extends LinearOpMode {
         int x = (int) detector.getXPosition();
         detector.disable();
         runtime.reset();
-
-        int liftMaxHeight = 18100;
-        robot.lift.setTargetPosition(-liftMaxHeight);
-        robot.lift.setPower(-1);
-        while (opModeIsActive() && robot.lift.isBusy() && robot.lift.getCurrentPosition() < liftMaxHeight) {
-            telemetry.addData("lift", robot.lift.getCurrentPosition());
+        while(opModeIsActive() && runtime.seconds() < 25) {
+            telemetry.addData("imu", robot.imu.getAngularOrientation());
             telemetry.update();
         }
-        robot.lift.setPower(0);
-        robot.move(0.5 * Math.sqrt(72), robotSpeed);
-        //Choose corresponding path
-        if (70 < x && x < 130) {
-            goldCenter();
-        } else if (285 < x && x < 345) {
-            goldRight();
-        } else {
-            goldLeft();
-        }
-        finishPath();
+
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
     public void goldLeft() {
-        robot.turn(-42.392, robotSpeed);
-        robot.move(Math.sqrt(1188), robotSpeed);
-        robot.turn(56.061, robotSpeed);
+        robot.turn(-28.561, robotSpeed);
+        robot.move(Math.sqrt(1260), robotSpeed);
+        robot.turn(70.746, robotSpeed);
         robot.move(Math.sqrt(1440), robotSpeed);
-        robot.turn(-(161.565), robotSpeed);
+        robot.turn(-(180 - 18.435), robotSpeed);
 
     }
 
     public void goldCenter() {
-        robot.move(7 * Math.sqrt(72), robotSpeed);
+        robot.move(7.5 * Math.sqrt(72), robotSpeed);
     }
 
     public void goldRight() {
-        robot.turn(42.392, robotSpeed);
-        robot.move(Math.sqrt(1188), robotSpeed);
-        robot.turn(-56.061, robotSpeed);
+        robot.turn(28.561, robotSpeed);
+        robot.move(Math.sqrt(1260), robotSpeed);
+        robot.turn(-70.746, robotSpeed);
         robot.move(Math.sqrt(1440), robotSpeed);
-        robot.turn(-70.801, robotSpeed);
+        robot.turn(-108.435, robotSpeed);
     }
 
     public void finishPath() {

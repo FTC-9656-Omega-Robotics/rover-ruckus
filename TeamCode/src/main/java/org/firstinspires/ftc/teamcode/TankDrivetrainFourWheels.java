@@ -66,8 +66,8 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
         double[] motorPowers = new double[4]; //create a new array to hold the motor powers
         motorPowers[0] = getVelocity() - rotation; //calculate the motor power for the left wheel
         motorPowers[1] = getVelocity() + rotation; //calculate the motor power for the right wheel
-        motorPowers[2] = motorPowers[1];
-        motorPowers[3] = motorPowers[0];
+        motorPowers[2] = motorPowers[1] + rotation;
+        motorPowers[3] = motorPowers[0] - rotation;
         return motorPowers;
     }
 
@@ -105,7 +105,7 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
      */
     @Override
     public double getCurrentPosition() {
-        return (motors[0].getCurrentPosition() + motors[1].getCurrentPosition()) / 2; //takes an avg of the encoder values for the two front wheels
+        return (motors[0].getCurrentPosition() + motors[1].getCurrentPosition() + motors[2].getCurrentPosition() + motors[3].getCurrentPosition()) / 4; //takes an avg of the encoder values for the two front wheels
     }
 
     /**
@@ -130,7 +130,7 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
      */
     @Override
     public boolean isPositioning() {
-        if (motors[0].isBusy() || motors[1].isBusy()) return true;
+        if (motors[0].isBusy() || motors[1].isBusy() || motors[2].isBusy() || motors[3].isBusy()) return true;
         else return false;
     }
 

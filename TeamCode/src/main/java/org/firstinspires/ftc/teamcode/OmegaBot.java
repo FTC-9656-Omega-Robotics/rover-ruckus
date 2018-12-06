@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMUImpl;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -7,9 +9,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import edu.spa.ftclib.internal.Robot;
 import edu.spa.ftclib.internal.activator.ServoActivator;
+import edu.spa.ftclib.internal.controller.ErrorTimeThresholdFinishingAlgorithm;
+import edu.spa.ftclib.internal.controller.FinishableIntegratedController;
+import edu.spa.ftclib.internal.controller.PIDController;
+import edu.spa.ftclib.internal.drivetrain.HeadingableTankDrivetrain;
+import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor;
 
 /**
  * Hardware mapping for Rover Ruckus 2018
@@ -33,21 +44,24 @@ public class OmegaBot extends Robot {
 
     DcMotor.RunMode myRunMode = DcMotor.RunMode.RUN_TO_POSITION;
     public ServoActivator teamMarkerActivator;
+    public ServoActivator leftFlipActivator;
+    public ServoActivator rightFlipActivator;
     public TankDrivetrainFourWheels drivetrain;
 
     //4 inch wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1)
     private final double ticksPerInch = (1120 / 2) / (2 * Math.PI * 2);
-    private final double ticksPerDegree = 24.7*1120/(8*360);//22*pi is the approximated turning circumference, multiplying that by ticks/inch , dividing by 360 degrees
+    private final double ticksPerDegree = 24.7 * 1120 / (8 * 360);//22*pi is the approximated turning circumference, multiplying that by ticks/inch , dividing by 360 degrees
 
-
-    public static final double ARM_UP_POWER    =  0.45 ;
-    public static final double ARM_DOWN_POWER  = -0.45 ;
+    public BNO055IMUImpl imu;
+    public FinishableIntegratedController controller;
+    Orientation lastAngles = new Orientation();
+    double globalAngle, power = .30, correction;
 
     OmegaBot(Telemetry telemetry, HardwareMap hardwareMap) {
         super(telemetry, hardwareMap);
 
-        frontLeft  = hardwareMap.get(DcMotor.class,"front_left");
-        frontRight = hardwareMap.get(DcMotor.class,"front_right");
+        frontLeft = hardwareMap.get(DcMotor.class, "front_left");
+        frontRight = hardwareMap.get(DcMotor.class, "front_right");
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
         backRight = hardwareMap.get(DcMotor.class, "back_right");
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -60,6 +74,33 @@ public class OmegaBot extends Robot {
         leftFlip = hardwareMap.get(Servo.class, "left_flip");
         rightFlip = hardwareMap.get(Servo.class, "right_flip");
         teamMarker = hardwareMap.get(Servo.class, "team_marker");
+
+        leftIntake.setPower(0);
+        rightIntake.setPower(0);
+
+
+        teamMarkerActivator = new ServoActivator(teamMarker, 0.9, 0.5);
+
+        teamMarkerActivator.deactivate();
+
+        // Default REV code
+        BNO055IMUImpl.Parameters parameters = new BNO055IMUImpl.Parameters();
+        parameters.mode = BNO055IMUImpl.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMUImpl.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMUImpl.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hardwareMap.get(BNO055IMUImpl.class, "imu");
+
+        imu.initialize(parameters);
+
+        telemetry.addData("Mode", "calibrating...");
+        telemetry.update();
+
+        controller = new FinishableIntegratedController(new IntegratingGyroscopeSensor(imu), new PIDController(1,1,1), new ErrorTimeThresholdFinishingAlgorithm(Math.PI/50, 1));
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
@@ -80,17 +121,13 @@ public class OmegaBot extends Robot {
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
+        drivetrain = new TankDrivetrainFourWheels(frontLeft, frontRight, backLeft, backRight);
         setDrivetrainToMode(myRunMode);
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
 //        arm1.setMode(myRunMode);
         //arm2.setMode(myRunMode);
 
-        drivetrain = new TankDrivetrainFourWheels(frontLeft, frontRight, backLeft, backRight);
-
-        teamMarkerActivator = new ServoActivator(teamMarker, 0.9, 0.5);
-
-        teamMarkerActivator.deactivate();
     }
 
     /**
@@ -101,7 +138,7 @@ public class OmegaBot extends Robot {
         setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
         drivetrain.setTargetPosition(100);
         drivetrain.setVelocity(0.5);
-        while(drivetrain.isPositioning()) {
+        while (drivetrain.isPositioning()) {
         }
         drivetrain.setVelocity(0);
         setDrivetrainToMode(originalMode); //revert to original mode once done
@@ -115,7 +152,7 @@ public class OmegaBot extends Robot {
         setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
         drivetrain.setTargetPosition(-100);
         drivetrain.setVelocity(-0.5);
-        while(drivetrain.isPositioning()) {
+        while (drivetrain.isPositioning()) {
         }
         drivetrain.setVelocity(0);
         setDrivetrainToMode(originalMode); //revert to original mode once done
@@ -127,7 +164,7 @@ public class OmegaBot extends Robot {
         setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
         drivetrain.setTargetPosition(ticksPerInch * inches);
         drivetrain.setVelocity(velocity);
-        while(drivetrain.isPositioning()) {
+        while (drivetrain.isPositioning()) {
             telemetry.update();
         }
         drivetrain.setVelocity(0);
@@ -136,7 +173,7 @@ public class OmegaBot extends Robot {
     }
 
     //This method makes the robot turn clockwise
-    public void turn(double degrees, double velocity){
+    public void turn(double degrees, double velocity) {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
 
         //Resets encoder values
@@ -146,10 +183,10 @@ public class OmegaBot extends Robot {
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Sets target position; left motor moves forward while right motor moves backward
-        frontLeft.setTargetPosition((int)(ticksPerDegree * degrees));
-        backLeft.setTargetPosition((int)(ticksPerDegree * degrees));
-        frontRight.setTargetPosition(-1*(int)(ticksPerDegree * degrees));
-        backRight.setTargetPosition(-1*(int)(ticksPerDegree * degrees));
+        frontLeft.setTargetPosition((int) (ticksPerDegree * degrees));
+        backLeft.setTargetPosition((int) (ticksPerDegree * degrees));
+        frontRight.setTargetPosition(-1 * (int) (ticksPerDegree * degrees));
+        backRight.setTargetPosition(-1 * (int) (ticksPerDegree * degrees));
 
         //Run to position
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -163,8 +200,7 @@ public class OmegaBot extends Robot {
         backRight.setPower(velocity);
 
         //While the motors are still running, no other code will run
-        while(frontRight.isBusy()&&frontLeft.isBusy()&&backRight.isBusy()&&backLeft.isBusy())
-        {
+        while (frontRight.isBusy() && frontLeft.isBusy() && backRight.isBusy() && backLeft.isBusy()) {
             telemetry.update();
         }
 
@@ -185,6 +221,36 @@ public class OmegaBot extends Robot {
         backRight.setMode(originalMode);
     }
 
+    /*
+     * This method makes the robot turn counterclockwise based on gyro values
+     * Velocity is always positive. Set neg degrees for clockwise turn
+     */
+    public void turnUsingGyro(double degrees, double velocity) {
+        double errorTolerance = 3;
+        double targetHeading;
+        if (degrees > 0) {
+            targetHeading = getAngleReadable() + degrees;
+            while (targetHeading - getAngleReadable() > errorTolerance) {
+                frontLeft.setPower(-velocity);
+                backLeft.setPower(-velocity);
+                frontRight.setPower(velocity);
+                backRight.setPower(velocity);
+            }
+        } else {
+            targetHeading = getAngleReadable() - degrees;
+            if (targetHeading < 0) {
+                targetHeading += 360;
+            }
+            while (targetHeading - getAngleReadable() > errorTolerance) {
+                frontLeft.setPower(velocity);
+                backLeft.setPower(velocity);
+                frontRight.setPower(-velocity);
+                backRight.setPower(velocity);
+            }
+        }
+        drivetrain.setVelocity(0);
+    }
+
     /**
      * Set all motors to a runmode
      *
@@ -196,4 +262,78 @@ public class OmegaBot extends Robot {
         backLeft.setMode(runMode);
         backRight.setMode(runMode);
     }
+
+    /**
+     * Resets the cumulative angle tracking to zero.
+     */
+    public void resetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        globalAngle = 0;
+    }
+
+    /**
+     * Get current cumulative angle rotation from last reset.
+     *
+     * @return Angle in degrees. + = left, - = right.
+     */
+    public double getAngle() {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
+    /**
+     * Get the real heading {0, 360}
+     *
+     * @return the heading of the robot {0, 360}
+     */
+    public double getAngleReadable() {
+        double a = getAngle() % 360;
+        if (a < 0) {
+            a = 360 + a;
+        }
+        return a;
+    }
+
+    /**
+     * See if we are moving in a straight line and if not return a power correction value.
+     *
+     * @return Power adjustment, + is adjust left - is adjust right.
+     */
+    public double checkDirection() {
+        // The gain value determines how sensitive the correction is to direction changes.
+        // You will have to experiment with your robot to get small smooth direction changes
+        // to stay on a straight line.
+        double correction, angle, gain = .10;
+
+        angle = getAngle();
+
+        if (angle == 0)
+            correction = 0;             // no adjustment.
+        else
+            correction = -angle;        // reverse sign of angle for correction.
+
+        correction = correction * gain;
+
+        return correction;
+    }
+
+
 }

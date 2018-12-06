@@ -7,19 +7,15 @@ package org.firstinspires.ftc.teamcode;
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Auto", group = "Testers")
+@Autonomous(name = "AutoGyroEnhanced", group = "Testers")
 //@Disabled
 
-public class Auto extends LinearOpMode {
+public class AutoGyroEnhanced extends LinearOpMode {
 
 
     private int initialPos, finalPos;
@@ -86,7 +82,9 @@ public class Auto extends LinearOpMode {
             telemetry.update();
         }
         robot.lift.setPower(0);
-        robot.move(0.5 * Math.sqrt(72), robotSpeed);
+
+        robot.move(0.9 * Math.sqrt(72), robotSpeed);
+
         //Choose corresponding path
         if (70 < x && x < 130) {
             goldCenter();

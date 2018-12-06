@@ -28,15 +28,20 @@ public class Teleop extends OpMode {
     private Toggle gamepad2LeftTrigger = new Toggle();
     private Toggle gamepad2RightTrigger = new Toggle();
 
+
     private ElapsedTime time = new ElapsedTime();
     double speedDamper = 0.4;
+    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void init() {
         robot = new OmegaBot(telemetry, hardwareMap);
         robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        runtime.reset();
+
     }
 
     /**
@@ -44,6 +49,7 @@ public class Teleop extends OpMode {
      */
     @Override
     public void loop() {
+
         if (gamepad2.left_bumper) {
             gamepad2LeftBumper.toggle();
         }
@@ -56,7 +62,8 @@ public class Teleop extends OpMode {
         if (gamepad2.right_trigger > 0.2) {
             gamepad2RightTrigger.toggle();
         }
-        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
 
         robot.frontLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
         robot.backLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
@@ -73,6 +80,17 @@ public class Teleop extends OpMode {
             speedDamper = 0.8;
         } else {
             speedDamper = 0.4;
+        }
+
+        if(gamepad1.a) {
+            robot.leftFlip.setPosition(robot.leftFlip.getPosition() + 0.2);
+        } else if (gamepad1.b) {
+            robot.leftFlip.setPosition(robot.leftFlip.getPosition() - 0.2);
+        }
+        if(gamepad1.x) {
+            robot.rightFlip.setPosition(robot.rightFlip.getPosition() + 0.2);
+        } else if (gamepad1.y) {
+            robot.rightFlip.setPosition(robot.rightFlip.getPosition() - 0.2);
         }
 
 
@@ -111,6 +129,8 @@ public class Teleop extends OpMode {
         telemetry.addData("back_left pos", robot.backLeft.getCurrentPosition());
         telemetry.addData("back_right pos", robot.backRight.getCurrentPosition());
         telemetry.addData("lift", robot.lift.getCurrentPosition());
+        telemetry.addData("imu", robot.imu.getAngularOrientation());
+        telemetry.addData("getAngle()", robot.getAngle());
     }
 
     private double absMax(double a, double b) { //Returns the argument whose absolute value is greater (similar to Math.max() but compares absolute values)
