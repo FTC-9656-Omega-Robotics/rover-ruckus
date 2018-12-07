@@ -16,9 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import edu.spa.ftclib.internal.Robot;
 import edu.spa.ftclib.internal.activator.ServoActivator;
-import edu.spa.ftclib.internal.controller.ErrorTimeThresholdFinishingAlgorithm;
-import edu.spa.ftclib.internal.controller.FinishableIntegratedController;
-import edu.spa.ftclib.internal.controller.PIDController;
+
 import edu.spa.ftclib.internal.drivetrain.HeadingableTankDrivetrain;
 import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor;
 
@@ -51,11 +49,12 @@ public class OmegaBot extends Robot {
     //4 inch wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1)
     private final double ticksPerInch = (1120 / 2) / (2 * Math.PI * 2);
     private final double ticksPerDegree = 24.7 * 1120 / (8 * 360);//22*pi is the approximated turning circumference, multiplying that by ticks/inch , dividing by 360 degrees
-
+    private final double errorTolerance = 3; //3 degrees error tolerance
     public BNO055IMUImpl imu;
-    public FinishableIntegratedController controller;
     Orientation lastAngles = new Orientation();
     double globalAngle, power = .30, correction;
+
+    OmegaPID pid;
 
     OmegaBot(Telemetry telemetry, HardwareMap hardwareMap) {
         super(telemetry, hardwareMap);
@@ -75,9 +74,21 @@ public class OmegaBot extends Robot {
         rightFlip = hardwareMap.get(Servo.class, "right_flip");
         teamMarker = hardwareMap.get(Servo.class, "team_marker");
 
-        leftIntake.setPower(0);
-        rightIntake.setPower(0);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+
+        backLeft.setDirection(DcMotor.Direction.REVERSE); //
+        backRight.setDirection(DcMotor.Direction.FORWARD);
+        rightIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift.setDirection(DcMotor.Direction.REVERSE);
+
+        leftFlip.setPosition(1);
+        rightFlip.setPosition(0);
 
         teamMarkerActivator = new ServoActivator(teamMarker, 0.9, 0.5);
 
@@ -100,33 +111,21 @@ public class OmegaBot extends Robot {
         telemetry.addData("Mode", "calibrating...");
         telemetry.update();
 
-        controller = new FinishableIntegratedController(new IntegratingGyroscopeSensor(imu), new PIDController(1,1,1), new ErrorTimeThresholdFinishingAlgorithm(Math.PI/50, 1));
+        pid = new OmegaPID(0.02, 0.0001, 0.0001, errorTolerance);
 
-        frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-
-        backLeft.setDirection(DcMotor.Direction.REVERSE); //
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-
-        lift.setDirection(DcMotor.Direction.REVERSE);
-
-        // Set all motors to zero power
+        leftIntake.setPower(0);
+        rightIntake.setPower(0);
         frontLeft.setPower(0);
         frontRight.setPower(0);
         backLeft.setPower(0);
         backRight.setPower(0);
         lift.setPower(0);
-//        arm1.setPower(0);
-        //arm2.setPower(0);
 
-        // Set all motors to run without encoders.
-        // May want to use RUN_USING_ENCODERS if encoders are installed.
+
         drivetrain = new TankDrivetrainFourWheels(frontLeft, frontRight, backLeft, backRight);
         setDrivetrainToMode(myRunMode);
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
-//        arm1.setMode(myRunMode);
-        //arm2.setMode(myRunMode);
 
     }
 
@@ -227,29 +226,53 @@ public class OmegaBot extends Robot {
      */
     public void turnUsingGyro(double degrees, double velocity) {
         double errorTolerance = 3;
-        double targetHeading;
+        double targetHeading = getAngle() + degrees;
         if (degrees > 0) {
-            targetHeading = getAngleReadable() + degrees;
-            while (targetHeading - getAngleReadable() > errorTolerance) {
+            while (targetHeading - getAngle() > errorTolerance) {
                 frontLeft.setPower(-velocity);
                 backLeft.setPower(-velocity);
                 frontRight.setPower(velocity);
                 backRight.setPower(velocity);
             }
         } else {
-            targetHeading = getAngleReadable() - degrees;
-            if (targetHeading < 0) {
-                targetHeading += 360;
-            }
-            while (targetHeading - getAngleReadable() > errorTolerance) {
+            while (getAngle() - targetHeading > errorTolerance) {
                 frontLeft.setPower(velocity);
                 backLeft.setPower(velocity);
                 frontRight.setPower(-velocity);
-                backRight.setPower(velocity);
+                backRight.setPower(-velocity);
             }
         }
         drivetrain.setVelocity(0);
     }
+
+    /**
+     * This method makes the robot turn counterclockwise based on gyro values and PID
+     * Velocity is always positive. Set neg degrees for clockwise turn
+     *
+     * @param degrees  desired angle in deg
+     * @param velocity max velocity
+     */
+    public void turnUsingPID(double degrees, double velocity) {
+        double max = velocity;
+        double targetHeading = getAngle() + degrees;
+        int count = 0;
+        frontLeft.setPower(-velocity);
+        backLeft.setPower(-velocity);
+        frontRight.setPower(velocity);
+        backRight.setPower(velocity);
+        while (Math.abs(targetHeading - getAngle()) > errorTolerance) {
+            telemetry.addData("Run", count );
+            velocity = pid.calculatePower(getAngle(), targetHeading, -max, max);
+            telemetry.addData("Calculated PID power", velocity);
+            frontLeft.setPower(-velocity);
+            backLeft.setPower(-velocity);
+            frontRight.setPower(velocity);
+            backRight.setPower(velocity);
+            count++;
+        }
+        drivetrain.setVelocity(0);
+    }
+
 
     /**
      * Set all motors to a runmode
@@ -274,10 +297,10 @@ public class OmegaBot extends Robot {
 
     /**
      * Get current cumulative angle rotation from last reset.
-     *
      * @return Angle in degrees. + = left, - = right.
      */
-    public double getAngle() {
+    public double getAngle()
+    {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes

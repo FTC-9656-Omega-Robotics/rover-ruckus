@@ -21,12 +21,10 @@ public class Teleop extends OpMode {
 
     private OmegaBot robot;
 
-    private ToggleBoolean toggleBoolean = new ToggleBoolean();
-    private ToggleBoolean driveMode = new ToggleBoolean();
-    private Toggle gamepad2LeftBumper = new Toggle();
-    private Toggle gamepad2RightBumper = new Toggle();
-    private Toggle gamepad2LeftTrigger = new Toggle();
-    private Toggle gamepad2RightTrigger = new Toggle();
+    private ToggleBoolean gamepad2LeftBumper = new ToggleBoolean();
+    private ToggleBoolean gamepad2RightBumper = new ToggleBoolean();
+    private ToggleBoolean gamepad2LeftTrigger = new ToggleBoolean();
+    private ToggleBoolean gamepad2RightTrigger = new ToggleBoolean();
 
 
     private ElapsedTime time = new ElapsedTime();
@@ -49,21 +47,10 @@ public class Teleop extends OpMode {
      */
     @Override
     public void loop() {
-
-        if (gamepad2.left_bumper) {
-            gamepad2LeftBumper.toggle();
-        }
-        if (gamepad2.right_bumper) {
-            gamepad2RightBumper.toggle();
-        }
-        if (gamepad2.left_trigger > 0.2) {
-            gamepad2LeftTrigger.toggle();
-        }
-        if (gamepad2.right_trigger > 0.2) {
-            gamepad2RightTrigger.toggle();
-        }
-
-
+        gamepad2LeftBumper.input(gamepad2.left_bumper);
+        gamepad2RightBumper.input(gamepad2.right_bumper);
+        gamepad2LeftTrigger.input(gamepad2.left_trigger > 0.2);
+        gamepad2RightTrigger.input(gamepad2.right_trigger > 0.2);
 
         robot.frontLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
         robot.backLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
@@ -71,30 +58,36 @@ public class Teleop extends OpMode {
         robot.frontRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
         robot.backRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
 
-        if(gamepad1.dpad_up) {
-            robot.turn(360, 0.5);
+        if (gamepad1.dpad_up) {
+            robot.turnUsingPID(180, 0.5);
         } else if (gamepad1.dpad_down) {
-            robot.move(12, 0.5);
+            robot.turnUsingPID(-180, 0.5);
+        } else if (gamepad1.dpad_left) {
+            robot.turnUsingGyro(90, 0.5);
+        } else if (gamepad1.dpad_right) {
+            robot.turn(-90, 0.5);
         }
+
         if (gamepad1.left_bumper && gamepad1.right_bumper) {
             speedDamper = 0.8;
         } else {
             speedDamper = 0.4;
         }
 
-        if(gamepad1.a) {
-            robot.leftFlip.setPosition(robot.leftFlip.getPosition() + 0.2);
+        if (gamepad1.a) {
+            robot.rightFlip.setPosition(0);
         } else if (gamepad1.b) {
-            robot.leftFlip.setPosition(robot.leftFlip.getPosition() - 0.2);
+            robot.rightFlip.setPosition(1);
         }
-        if(gamepad1.x) {
-            robot.rightFlip.setPosition(robot.rightFlip.getPosition() + 0.2);
+        if (gamepad1.x) {
+            robot.leftFlip.setPosition(0);
         } else if (gamepad1.y) {
-            robot.rightFlip.setPosition(robot.rightFlip.getPosition() - 0.2);
+            robot.leftFlip.setPosition(1);
         }
 
 
         //gamepad2 will have all the special mechanisms
+
         if (gamepad2.dpad_up) {
             robot.lift.setPower(-1);
         } else if (gamepad2.dpad_down) {
@@ -103,24 +96,44 @@ public class Teleop extends OpMode {
             robot.lift.setPower(0);
         }
 
-        if (gamepad2LeftBumper.output()) {
-            robot.leftIntake.setPower(0.9);
-        } else if (gamepad2LeftTrigger.output()) {
-            robot.leftIntake.setPower(-0.9);
+
+        //INTAKES
+//        if (gamepad2LeftBumper.output()) {
+//            robot.leftIntake.setPower(0.9); //outtake
+//        } else if (gamepad2LeftTrigger.output()) {
+//            robot.leftIntake.setPower(-0.9);
+//        } else {
+//            robot.leftIntake.setPower(0);
+//        }
+//
+//        if (gamepad2RightBumper.output()) {
+//            robot.rightIntake.setPower(0.9); //outtake
+//        } else if (gamepad2RightTrigger.output()) {
+//            robot.rightIntake.setPower(-0.9); //intake
+//        } else {
+//            robot.rightIntake.setPower(0);
+//        }
+
+        if(gamepad2.left_bumper) {
+            robot.leftIntake.setPower(0.9); //outtake
+        } else if (gamepad2.left_trigger > 0.2) {
+            robot.leftIntake.setPower(-0.9); //intake
         } else {
             robot.leftIntake.setPower(0);
         }
 
-        if (gamepad2RightBumper.output()) {
-            robot.rightIntake.setPower(0.9);
-        } else if (gamepad2RightTrigger.output()) {
-            robot.rightIntake.setPower(-0.9);
+        if(gamepad2.right_bumper) {
+            robot.rightIntake.setPower(0.9); //outtake
+        } else if (gamepad2.right_trigger > 0.2) {
+            robot.rightIntake.setPower(-0.9); //intake
         } else {
             robot.rightIntake.setPower(0);
         }
 
+
+
         robot.pivot.setPower(-gamepad2.left_stick_y);
-        robot.arm.setPower(-gamepad2.right_stick_y);
+        robot.arm.setPower(gamepad2.right_stick_y);
 
 
         // telemetry.addData("arm pos", robot.arm1.getCurrentPosition());
@@ -128,6 +141,8 @@ public class Teleop extends OpMode {
         telemetry.addData("front_right pos", robot.frontRight.getCurrentPosition());
         telemetry.addData("back_left pos", robot.backLeft.getCurrentPosition());
         telemetry.addData("back_right pos", robot.backRight.getCurrentPosition());
+        telemetry.addData("left_flip pos", robot.leftFlip.getPosition());
+        telemetry.addData("right_flip pos", robot.rightFlip.getPosition());
         telemetry.addData("lift", robot.lift.getCurrentPosition());
         telemetry.addData("imu", robot.imu.getAngularOrientation());
         telemetry.addData("getAngle()", robot.getAngle());
