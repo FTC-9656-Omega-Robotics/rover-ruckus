@@ -26,9 +26,7 @@ public class Teleop extends OpMode {
     private ToggleBoolean gamepad2LeftTrigger = new ToggleBoolean();
     private ToggleBoolean gamepad2RightTrigger = new ToggleBoolean();
 
-
-    private ElapsedTime time = new ElapsedTime();
-    double speedDamper = 0.4;
+    private double speedDamper = 0.4;
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
@@ -38,7 +36,6 @@ public class Teleop extends OpMode {
         robot.setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        runtime.reset();
 
     }
 

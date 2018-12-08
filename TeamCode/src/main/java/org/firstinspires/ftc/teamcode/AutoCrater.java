@@ -85,9 +85,9 @@ public class AutoCrater extends LinearOpMode {
         robot.move(0.8 * Math.sqrt(72), robotSpeed);
         //Choose corresponding path
         //radius of 30 around the central values
-        if (Math.abs(x-240) < 30) {
+        if (Math.abs(x-240) < 40) {
             goldCenter();
-        } else if (Math.abs(x-440) > 30) {
+        } else if (Math.abs(x-440) > 40) {
             goldRight();
         } else {
             goldLeft();

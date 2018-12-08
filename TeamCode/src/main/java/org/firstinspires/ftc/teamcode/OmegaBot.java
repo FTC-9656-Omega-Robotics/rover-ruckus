@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMUImpl;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -49,7 +49,7 @@ public class OmegaBot extends Robot {
     private final double ticksPerInch = (1120 / 2) / (2 * Math.PI * 2);
     private final double ticksPerDegree = 24.7 * 1120 / (8 * 360);//22*pi is the approximated turning circumference, multiplying that by ticks/inch , dividing by 360 degrees
     private final double errorTolerance = 3; //3 degrees error tolerance
-    public BNO055IMUImpl imu;
+    public BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle, power = .30, correction;
 
@@ -73,8 +73,8 @@ public class OmegaBot extends Robot {
         rightFlip = hardwareMap.get(Servo.class, "right_flip");
         teamMarker = hardwareMap.get(Servo.class, "team_marker");
 
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         pivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -82,8 +82,7 @@ public class OmegaBot extends Robot {
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-
-        backLeft.setDirection(DcMotor.Direction.REVERSE); //
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
         rightIntake.setDirection(DcMotorSimple.Direction.REVERSE);
         lift.setDirection(DcMotor.Direction.FORWARD);
@@ -93,21 +92,18 @@ public class OmegaBot extends Robot {
         rightFlip.setPosition(0);
 
         // Default REV code
-        BNO055IMUImpl.Parameters parameters = new BNO055IMUImpl.Parameters();
-        parameters.mode = BNO055IMUImpl.SensorMode.IMU;
-        parameters.angleUnit = BNO055IMUImpl.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMUImpl.AccelUnit.METERS_PERSEC_PERSEC;
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.loggingEnabled = false;
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
         // and named "imu".
-        imu = hardwareMap.get(BNO055IMUImpl.class, "imu");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         imu.initialize(parameters);
-
-        telemetry.addData("Mode", "calibrating...");
-        telemetry.update();
 
         pid = new OmegaPID(0.02, 0.0001, 0.0001, errorTolerance);
 
