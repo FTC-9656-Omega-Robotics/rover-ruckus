@@ -41,7 +41,6 @@ public class OmegaBot extends Robot {
     public Servo teamMarker;
 
     DcMotor.RunMode myRunMode = DcMotor.RunMode.RUN_TO_POSITION;
-    public ServoActivator teamMarkerActivator;
     public ServoActivator leftFlipActivator;
     public ServoActivator rightFlipActivator;
     public TankDrivetrainFourWheels drivetrain;
@@ -87,14 +86,11 @@ public class OmegaBot extends Robot {
         backLeft.setDirection(DcMotor.Direction.REVERSE); //
         backRight.setDirection(DcMotor.Direction.FORWARD);
         rightIntake.setDirection(DcMotorSimple.Direction.REVERSE);
-        lift.setDirection(DcMotor.Direction.REVERSE);
+        lift.setDirection(DcMotor.Direction.FORWARD);
 
+        teamMarker.setPosition(0.9);
         leftFlip.setPosition(1);
         rightFlip.setPosition(0);
-
-        teamMarkerActivator = new ServoActivator(teamMarker, 0.9, 0.5);
-
-        teamMarkerActivator.deactivate();
 
         // Default REV code
         BNO055IMUImpl.Parameters parameters = new BNO055IMUImpl.Parameters();
@@ -173,8 +169,9 @@ public class OmegaBot extends Robot {
         setDrivetrainToMode(originalMode);
     }
 
-    //This method makes the robot turn clockwise
+    //This method makes the robot turn counterclockwise
     public void turn(double degrees, double velocity) {
+        degrees = -degrees;                             //quickfix to make Nidhir's method turn robot counterclockwise with positive arg passed to degrees
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
 
         //Resets encoder values

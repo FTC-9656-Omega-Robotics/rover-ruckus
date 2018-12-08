@@ -59,7 +59,9 @@ public class Teleop extends OpMode {
         robot.backRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
 
         if (gamepad1.dpad_up) {
-            robot.move(12, 0.5);
+            robot.teamMarker.setPosition(0.9); //0.9 is rest
+        } else if (gamepad1.dpad_down){
+            robot.teamMarker.setPosition(0); //0 is extended
         }
         if (gamepad1.left_bumper && gamepad1.right_bumper) {
             speedDamper = 0.8;
@@ -67,15 +69,15 @@ public class Teleop extends OpMode {
             speedDamper = 0.4;
         }
 
-        if (gamepad1.a) {
+        if (gamepad2.a) {
             robot.rightFlip.setPosition(0);
-        } else if (gamepad1.b) {
-            robot.rightFlip.setPosition(0.5);
+        } else if (gamepad2.b) {
+            robot.rightFlip.setPosition(0.75);
         }
-        if (gamepad1.x) {
+        if (gamepad2.x) {
             robot.leftFlip.setPosition(1);
-        } else if (gamepad1.y) {
-            robot.leftFlip.setPosition(0.5);
+        } else if (gamepad2.y) {
+            robot.leftFlip.setPosition(0.25);
         }
 
 
@@ -136,9 +138,8 @@ public class Teleop extends OpMode {
         telemetry.addData("back_right pos", robot.backRight.getCurrentPosition());
         telemetry.addData("left_flip pos", robot.leftFlip.getPosition());
         telemetry.addData("right_flip pos", robot.rightFlip.getPosition());
+        telemetry.addData("team_marker", robot.teamMarker.getPosition());
         telemetry.addData("lift", robot.lift.getCurrentPosition());
-        telemetry.addData("imu", robot.imu.getAngularOrientation());
-        telemetry.addData("getAngle()", robot.getAngle());
     }
 
     private double absMax(double a, double b) { //Returns the argument whose absolute value is greater (similar to Math.max() but compares absolute values)
