@@ -7,12 +7,8 @@ package org.firstinspires.ftc.teamcode;
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -86,15 +82,18 @@ public class AutoDepot extends LinearOpMode {
             telemetry.update();
         }
         robot.lift.setPower(0);
-        robot.move(0.8 * Math.sqrt(72), robotSpeed);
+        robot.move(0.7 * Math.sqrt(72), robotSpeed);
         //Choose corresponding path
-        //radius of 30 around the central values
+        //radius of 40 around the central values
         if (Math.abs(x-240) < 40) {
             goldCenter();
-        } else if (Math.abs(x-440) > 40) {
+            telemetry.addLine("goldCenter() selected.");
+        } else if (Math.abs(x-440) < 40) {
             goldRight();
+            telemetry.addLine("goldRight() selected.");
         } else {
             goldLeft();
+            telemetry.addLine("goldLeft() selected");
         }
         finishPath();
     }
@@ -103,28 +102,35 @@ public class AutoDepot extends LinearOpMode {
     public void goldLeft() {
         robot.turn(42.392, robotSpeed); // turn() method takes in a pos arg NOW to turn left
         robot.move(Math.sqrt(1188), robotSpeed);
+        //then head to depot
         robot.turn(-56.061, robotSpeed);
-        robot.move(Math.sqrt(1440) + 0.8, robotSpeed); //add 0.8 to compensate for real-life unexpected gap
+        robot.move(Math.sqrt(1440) + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed); //add addendum to compensate for real-life unexpected gap
+        robot.teamMarker.setPosition(0); // 0 is extended, 0.9 is withdrawn
+        sleep(1000);
+        robot.teamMarker.setPosition(0.9);
         robot.turn(161.565, robotSpeed);
 
     }
 
     public void goldCenter() {
-        robot.move(7 * Math.sqrt(72) + 0.8, robotSpeed);
+        robot.move(7 * Math.sqrt(72) + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed);
+        robot.teamMarker.setPosition(0); // 0 is extended, 0.9 is withdrawn
+        sleep(1000);
+        robot.teamMarker.setPosition(0.9);
     }
 
     public void goldRight() {
         robot.turn(-42.392, robotSpeed);
         robot.move(Math.sqrt(1188), robotSpeed);
+        //then head to depot
         robot.turn(56.061, robotSpeed);
-        robot.move(Math.sqrt(1440) + 0.8, robotSpeed);
+        robot.move(Math.sqrt(1440) + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed);
+        robot.teamMarker.setPosition(0); // 0 is extended, 0.9 is withdrawn
+        sleep(1000);
         robot.turn(70.801, robotSpeed);
     }
 
     public void finishPath() {
-        robot.teamMarker.setPosition(0); // 0 is extended, 0.9 is withdrawn
-        sleep(1000);
-        robot.teamMarker.setPosition(0.9);
         robot.move(102, robotSpeed);
     }
 }

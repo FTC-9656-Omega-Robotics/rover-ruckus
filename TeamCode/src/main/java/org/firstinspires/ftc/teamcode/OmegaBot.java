@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,9 +15,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import edu.spa.ftclib.internal.Robot;
 import edu.spa.ftclib.internal.activator.ServoActivator;
-
-import edu.spa.ftclib.internal.drivetrain.HeadingableTankDrivetrain;
-import edu.spa.ftclib.internal.sensor.IntegratingGyroscopeSensor;
 
 /**
  * Hardware mapping for Rover Ruckus 2018
@@ -52,6 +48,8 @@ public class OmegaBot extends Robot {
     public BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle, power = .30, correction;
+
+    private double MOVE_CORRECTION_ADDENDUM = 0.1;
 
     OmegaPID pid;
 
@@ -351,6 +349,10 @@ public class OmegaBot extends Robot {
         correction = correction * gain;
 
         return correction;
+    }
+
+    public double getMOVE_CORRECTION_ADDENDUM() {
+        return MOVE_CORRECTION_ADDENDUM;
     }
 
 
