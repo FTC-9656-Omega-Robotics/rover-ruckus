@@ -26,7 +26,7 @@ public class Auto extends LinearOpMode {
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
     private OmegaBot robot;
-    private double robotSpeed = 0.3;
+    private double robotSpeed = 0.5;
 
     @Override
     public void runOpMode() {
@@ -86,11 +86,12 @@ public class Auto extends LinearOpMode {
             telemetry.update();
         }
         robot.lift.setPower(0);
-        robot.move(0.5 * Math.sqrt(72), robotSpeed);
+        robot.move(0.8 * Math.sqrt(72), robotSpeed);
         //Choose corresponding path
-        if (70 < x && x < 130) {
+        //radius of 30 around the central values
+        if (Math.abs(x-240) < 30) {
             goldCenter();
-        } else if (285 < x && x < 345) {
+        } else if (Math.abs(x-440) > 30) {
             goldRight();
         } else {
             goldLeft();

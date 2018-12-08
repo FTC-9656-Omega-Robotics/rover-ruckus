@@ -59,15 +59,8 @@ public class Teleop extends OpMode {
         robot.backRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
 
         if (gamepad1.dpad_up) {
-            robot.turnUsingPID(180, 0.5);
-        } else if (gamepad1.dpad_down) {
-            robot.turnUsingPID(-180, 0.5);
-        } else if (gamepad1.dpad_left) {
-            robot.turnUsingGyro(90, 0.5);
-        } else if (gamepad1.dpad_right) {
-            robot.turn(-90, 0.5);
+            robot.move(12, 0.5);
         }
-
         if (gamepad1.left_bumper && gamepad1.right_bumper) {
             speedDamper = 0.8;
         } else {
@@ -77,12 +70,12 @@ public class Teleop extends OpMode {
         if (gamepad1.a) {
             robot.rightFlip.setPosition(0);
         } else if (gamepad1.b) {
-            robot.rightFlip.setPosition(1);
+            robot.rightFlip.setPosition(0.5);
         }
         if (gamepad1.x) {
-            robot.leftFlip.setPosition(0);
-        } else if (gamepad1.y) {
             robot.leftFlip.setPosition(1);
+        } else if (gamepad1.y) {
+            robot.leftFlip.setPosition(0.5);
         }
 
 
