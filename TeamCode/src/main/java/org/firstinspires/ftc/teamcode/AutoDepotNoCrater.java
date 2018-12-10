@@ -85,10 +85,10 @@ public class AutoDepotNoCrater extends LinearOpMode {
         robot.move(0.7 * Math.sqrt(72), robotSpeed);
         //Choose corresponding path
         //radius of 40 around the central values
-        if (Math.abs(x-240) < 40) {
+        if (Math.abs(x-240) < robot.getAUTO_GOLD_RADIUS()) {
             goldCenter();
             telemetry.addLine("goldCenter() selected.");
-        } else if (Math.abs(x-440) < 40) {
+        } else if (Math.abs(x-440) < robot.getAUTO_GOLD_RADIUS()) {
             goldRight();
             telemetry.addLine("goldRight() selected.");
         } else {
