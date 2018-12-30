@@ -24,13 +24,11 @@ public class OmegaBot extends Robot {
     public DcMotor frontRight;
     public DcMotor backLeft;
     public DcMotor backRight;
-    public DcMotor intake;
-    public DcMotor pivot;
+    public DcMotor extension;
     public DcMotor arm;
     public DcMotor lift;
 
-    public CRServo leftIntake;
-    public CRServo rightIntake;
+    public CRServo intake;
     public Servo leftFlip;
     public Servo rightFlip;
     public Servo teamMarker;
@@ -57,13 +55,11 @@ public class OmegaBot extends Robot {
         frontRight = hardwareMap.get(DcMotor.class, "front_right");
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
         backRight = hardwareMap.get(DcMotor.class, "back_right");
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        pivot = hardwareMap.get(DcMotor.class, "pivot");
+        extension = hardwareMap.get(DcMotor.class, "extension");
         arm = hardwareMap.get(DcMotor.class, "arm");
 
         lift = hardwareMap.get(DcMotor.class, "lift");
-        leftIntake = hardwareMap.get(CRServo.class, "left_intake");
-        rightIntake = hardwareMap.get(CRServo.class, "right_intake");
+        intake = hardwareMap.get(CRServo.class, "intake");
         leftFlip = hardwareMap.get(Servo.class, "left_flip");
         rightFlip = hardwareMap.get(Servo.class, "right_flip");
         teamMarker = hardwareMap.get(Servo.class, "team_marker");
@@ -72,22 +68,22 @@ public class OmegaBot extends Robot {
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        pivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
-        rightIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         lift.setDirection(DcMotor.Direction.FORWARD);
+        extension.setDirection(DcMotorSimple.Direction.FORWARD);
 
         teamMarker.setPosition(0.9);
-        leftFlip.setPosition(1);
-        rightFlip.setPosition(0);
+        leftFlip.setPosition(0);
+        rightFlip.setPosition(1);
 
-        leftIntake.setPower(0);
-        rightIntake.setPower(0);
+        intake.setPower(0);
         frontLeft.setPower(0);
         frontRight.setPower(0);
         backLeft.setPower(0);
