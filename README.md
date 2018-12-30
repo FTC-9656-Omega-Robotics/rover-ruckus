@@ -1,60 +1,4 @@
-## FTC 9656 - Getting Started from Scratch
-
-### Installation
-Follow this section if you're an FTC 9656 member and none of the other sections unless specifically told to do so.
-If you've already done some of the following, then there's no need to repeat. Just make sure each software is up-to-date.
-1. Download and install Java.
-1. Download and install Android Studio.
-1. Open Android Studio.
-1. Select "Check out from version control."
-1. If you want, you can change the location of where the FTC repo will be downloaded to. The default is into `~/StudioProjects`.
-`~` is programmer shorthand for your Home folder.
-1. Paste in this link https://gitlab.com/ftc-9656/rover-ruckus.git
-1. Enter in your Gitlab credentials.
-1. Select "Set up as an Android Project"
-1. Select "Import existing Android Gradle project."
-There might be some errors the first time the project runs.
-1. Android Studio will offer some solutions in blue text (Usually install missing platforms.) Click on the blue text to install those tools.
-1. Now there might be a HOMAR error.
-
-To fix HOMAR, do (instructions copied from HOMAR Github page)
-1. Choose `File -> Sync Project with Gradle Files`; there should be an error about not being able to find `:HOMAR-FTC-Library`
-1. Go to the command line and `cd` to your project folder
-1. Test by running `git status`; you should see some information about your Git setup
-1. Run `git submodule init`; this should output `Submodule 'HOMAR-FTC-Library' … registered for path 'HOMAR-FTC-Library'`
-1. Delete the `HOMAR-FTC-Library` folder in your project folder
-1. Run `git submodule update`
-1. Open your project in Android Studio and choose `File -> Sync with File System`
-1. Click “Add root” in the box that appears about an “unregistered VCS root”
-1. Choose `File -> Sync Project with Gradle Files`
-1. If the Gradle sync in step 9 fails, restart Android Studio and redo the Gradle sync.
-1. Click on `Git: …` at the bottom-right of the Android Studio window, then click `HOMAR-FTC-Library`
-1. Click on `Master` under `Local Branches`, then click `Checkout`
-1. Test by opening `TestOpMode.java` in `TeamCode/java/org.firstinspires.ftc.teamcode` (or wherever your store your op-modes) and verifying that there are no import errors
-
-To set up your own git branch (we never edit directly on master) after doing all the above
-1. Open Terminal.
-1. Make sure you're at the project folder (your commandline path should be `~/StudioProjectsOrWhereYouPutYourFTC/rover-ruckus`
-1. Run `git checkout -b yourNameHere` , substituting in your name.
-
-### Some quick briefing
-1. Gradle is software used by an app to retrieve smaller bits of software it needs to run.
-1. Git is used for version control (time machine to go back to earlier versions of code) and distributing code.
-The bottom layer is called local (what's on your hard drive); the top layer is called remote (what's hosted on Gitlab.com).
-1. You need to learn how to navigate Git using Android Studio's built in GUI (graphical user interface--basically, buttons) or the Terminal (commandline).
-I personally prefer Terminal.
-1. The Terminal on Android Studio is very useful. It can be accessed using the bottom toolbar.
-1. I suggest reading http://ftctechnh.github.io/ftc_app/doc/javadoc/index.html if you'd like to know more about code supplied by FTC SDK.
-1. Google is your best friend for debugging or figuring out how to do something.
-1. Coding might seem hard at first (you understand or can guess what something does, but can't remember all the names
-and wouldn't be able to make it from scratch). Don't worry. The link above shows all the commonly
-used classes and methods, and you can always reference past code (I do).
-1. Ask Tommy for questions.
-
-
-
-
-## Standard FTC Documentation -- Welcome!
+## Welcome!
 This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
 
 If you are new to the *FIRST* Tech Challenge software and control system, you should visit the online wiki to learn how to install, configure, and use the software and control system:
@@ -96,6 +40,40 @@ Documentation for the FTC SDK is also included with this repository.  There is a
 For technical questions regarding the SDK, please visit the FTC Technology forum:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://ftcforum.usfirst.org/forumdisplay.php?156-FTC-Technology
+
+**************************************************************************************
+# Release Information
+**************************************************************************************
+
+Version 4.3 (built on 18.10.31)
+ * Includes missing TensorFlow-related libraries and files.
+
+**************************************************************************************
+# Release Information
+**************************************************************************************
+
+Version 4.2 (built on 18.10.30)
+ * Includes fix to avoid deadlock situation with WatchdogMonitor which could result in USB communication errors.
+     - Comm error appeared to require that user disconnect USB cable and restart the Robot Controller app to recover.
+     - robotControllerLog.txt would have error messages that included the words "E RobotCore: lynx xmit lock: #### abandoning lock:"
+ * Includes fix to correctly list the parent module address for a REV Robotics Expansion Hub in a configuration (.xml) file.
+     - Bug in versions 4.0 and 4.1 would incorrect list the address module for a parent REV Robotics device as "1".
+     - If the parent module had a higher address value than the daisy-chained module, then this bug would prevent the Robot Controller from communicating with the downstream Expansion Hub.
+ * Added requirement for ACCESS_COARSE_LOCATION to allow a Driver Station running Android Oreo to scan for Wi-Fi Direct devices.
+ * Added google() repo to build.gradle because aapt2 must be downloaded from the google() repository beginning with version 3.2 of the Android Gradle Plugin.
+     - Important Note: Android Studio users will need to be connected to the Internet the first time build the ftc_app project.
+     - Internet connectivity is required for the first build so the appropriate files can be downloaded from the Google repository.
+     - Users should not need to be connected to the Internet for subsequent builds.
+     - This should also fix buid issue where Android Studio would complain that it "Could not find com.android.tools.lint:lint-gradle:26.1.4" (or similar).
+ * Added support for REV Spark Mini motor controller as part of the configuration menu for a servo/PWM port on the REV Expansion Hub.
+ * Provide examples for playing audio files in an Op Mode.
+ * Block Development Tool Changes
+     - Includes a fix for a problem with the Velocity blocks that were reported in the FTC Technology forum (Blocks Programming subforum).
+     - Change the "Save completed successfully." message to a white color so it will contrast with a green background.
+     - Fixed the "Download image" feature so it will work if there are text blocks in the op mode.    
+ * Introduce support for Google's TensorFlow Lite technology for object detetion for 2018-2019 game.
+     - TensorFlow lite can recognize Gold Mineral and Silver Mineral from 2018-2019 game.
+     - Example Java and Block op modes are included to show how to determine the relative position of the gold block (left, center, right).
 
 **************************************************************************************
 # Release Information
