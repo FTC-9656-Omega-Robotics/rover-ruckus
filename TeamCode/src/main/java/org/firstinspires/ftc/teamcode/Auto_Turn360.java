@@ -30,6 +30,19 @@ public class Auto_Turn360 extends LinearOpMode {
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //imu
+        // make sure the imu gyro is calibrated before continuing.
+        while (!isStopRequested() && !robot.imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status", robot.imu.getCalibrationStatus().toString());
+        telemetry.update();
+
         // Set up detector
         detector = new GoldAlignDetector(); // Create detector
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
@@ -58,7 +71,7 @@ public class Auto_Turn360 extends LinearOpMode {
         detector.disable();
         waitForStart();
         runtime.reset();
-        robot.turn(360,0.3);
+        robot.turnUsingPID(-270,0.5);
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}

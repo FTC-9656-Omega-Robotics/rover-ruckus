@@ -87,15 +87,18 @@ public class AutoDepot extends LinearOpMode {
 
         //Choose corresponding path
         //radius of 40 around the central values
-        if (Math.abs(x-240) < robot.getAUTO_GOLD_RADIUS()) {
-            goldCenter();
+        if (Math.abs(x-178) < robot.getAUTO_GOLD_RADIUS()) {
             telemetry.addLine("goldCenter() selected.");
-        } else if (Math.abs(x-440) < robot.getAUTO_GOLD_RADIUS()) {
-            goldRight();
+            telemetry.update();
+            goldCenter();
+        } else if (Math.abs(x-402) < robot.getAUTO_GOLD_RADIUS()) {
             telemetry.addLine("goldRight() selected.");
+            telemetry.update();
+            goldRight();
         } else {
-            goldLeft();
             telemetry.addLine("goldLeft() selected");
+            telemetry.update();
+            goldLeft();
         }
         //finishPath();
     }

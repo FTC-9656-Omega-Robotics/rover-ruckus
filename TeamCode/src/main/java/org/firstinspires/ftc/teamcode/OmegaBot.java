@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -38,11 +39,13 @@ public class OmegaBot extends Robot {
     public ServoActivator rightFlipActivator;
     public TankDrivetrainFourWheels drivetrain;
 
-    //4 inch wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1)
-    private final double ticksPerInch = (1120 / 2) / (2 * Math.PI * 2);
-    private final double ticksPerDegree = 24.7 * 1120 / (8 * 360);//22*pi is the approximated turning circumference, multiplying that by ticks/inch , dividing by 360 degrees
+    //3.77953-inch diameter wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1); 27 inch turning diameter
+    private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI);
+    private final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0/3); //2.0 / 3 is random scale factor
     private final double errorTolerance = 3; //3 degrees error tolerance
     Orientation lastAngles = new Orientation();
+    BNO055IMU imu;
+    OmegaPID pid;
     double globalAngle, power = .30, correction;
 
     private double MOVE_CORRECTION_ADDENDUM = 0.1;
@@ -63,6 +66,18 @@ public class OmegaBot extends Robot {
         leftFlip = hardwareMap.get(Servo.class, "left_flip");
         rightFlip = hardwareMap.get(Servo.class, "right_flip");
         teamMarker = hardwareMap.get(Servo.class, "team_marker");
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+        parameters.mode                = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled      = false;
+        imu = hardwareMap.get(BNO055IMU.class, "imu1");
+
+        imu.initialize(parameters);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -95,6 +110,8 @@ public class OmegaBot extends Robot {
         setDrivetrainToMode(myRunMode);
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
+
+        pid = new OmegaPID(0.01, 0.05, 0.01, 2);
 
     }
 
@@ -169,7 +186,7 @@ public class OmegaBot extends Robot {
         backRight.setPower(velocity);
 
         //While the motors are still running, no other code will run
-        while (frontRight.isBusy() && frontLeft.isBusy() && backRight.isBusy() && backLeft.isBusy()) {
+        while (drivetrain.isPositioning()) {
             telemetry.update();
         }
 
@@ -189,59 +206,63 @@ public class OmegaBot extends Robot {
         frontRight.setMode(originalMode);
         backRight.setMode(originalMode);
     }
-//
-//    /*
-//     * This method makes the robot turn counterclockwise based on gyro values
-//     * Velocity is always positive. Set neg degrees for clockwise turn
-//     */
-//    public void turnUsingGyro(double degrees, double velocity) {
-//        double errorTolerance = 3;
-//        double targetHeading = getAngle() + degrees;
-//        if (degrees > 0) {
-//            while (targetHeading - getAngle() > errorTolerance) {
-//                frontLeft.setPower(-velocity);
-//                backLeft.setPower(-velocity);
-//                frontRight.setPower(velocity);
-//                backRight.setPower(velocity);
-//            }
-//        } else {
-//            while (getAngle() - targetHeading > errorTolerance) {
-//                frontLeft.setPower(velocity);
-//                backLeft.setPower(velocity);
-//                frontRight.setPower(-velocity);
-//                backRight.setPower(-velocity);
-//            }
-//        }
-//        drivetrain.setVelocity(0);
-//    }
 
-//    /**
-//     * This method makes the robot turn counterclockwise based on gyro values and PID
-//     * Velocity is always positive. Set neg degrees for clockwise turn
-//     *
-//     * @param degrees  desired angle in deg
-//     * @param velocity max velocity
-//     */
-//    public void turnUsingPID(double degrees, double velocity) {
-//        double max = velocity;
-//        double targetHeading = getAngle() + degrees;
-//        int count = 0;
-//        frontLeft.setPower(-velocity);
-//        backLeft.setPower(-velocity);
-//        frontRight.setPower(velocity);
-//        backRight.setPower(velocity);
-//        while (Math.abs(targetHeading - getAngle()) > errorTolerance) {
-//            telemetry.addData("Run", count );
-//            velocity = pid.calculatePower(getAngle(), targetHeading, -max, max);
-//            telemetry.addData("Calculated PID power", velocity);
-//            frontLeft.setPower(-velocity);
-//            backLeft.setPower(-velocity);
-//            frontRight.setPower(velocity);
-//            backRight.setPower(velocity);
-//            count++;
-//        }
-//        drivetrain.setVelocity(0);
-//    }
+    /*
+     * This method makes the robot turn counterclockwise based on gyro values
+     * Velocity is always positive. Set neg degrees for clockwise turn
+     */
+    public void turnUsingGyro(double degrees, double velocity) {
+        DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
+        setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double errorTolerance = 0;
+        double targetHeading = getAngle() + degrees;
+        if (degrees > 0) {
+            while (targetHeading - getAngle() > errorTolerance) {
+                frontLeft.setPower(-velocity);
+                backLeft.setPower(-velocity);
+                frontRight.setPower(velocity);
+                backRight.setPower(velocity);
+            }
+        } else {
+            while (getAngle() - targetHeading > errorTolerance) {
+                frontLeft.setPower(velocity);
+                backLeft.setPower(velocity);
+                frontRight.setPower(-velocity);
+                backRight.setPower(-velocity);
+            }
+        }
+        drivetrain.setVelocity(0);
+        setDrivetrainToMode(originalMode);
+    }
+
+    /**
+     * This method makes the robot turn counterclockwise based on gyro values and PID
+     * Velocity is always positive. Set neg degrees for clockwise turn
+     *
+     * @param degrees  desired angle in deg
+     * @param velocity max velocity
+     */
+    public void turnUsingPID(double degrees, double velocity) {
+        DcMotor.RunMode original = frontLeft.getMode(); //assume all drive motors r the same runmode
+        setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double max = velocity;
+        double targetHeading = getAngle() + degrees;
+        frontLeft.setPower(-velocity);
+        backLeft.setPower(-velocity);
+        frontRight.setPower(velocity);
+        backRight.setPower(velocity);
+        while (Math.abs(targetHeading - getAngle()) > errorTolerance) {
+            velocity = pid.calculatePower(getAngle(), targetHeading, -max, max);
+            telemetry.addData("Calculated PID power", velocity);
+            telemetry.update();
+            frontLeft.setPower(-velocity);
+            backLeft.setPower(-velocity);
+            frontRight.setPower(velocity);
+            backRight.setPower(velocity);
+        }
+        drivetrain.setVelocity(0);
+        setDrivetrainToMode(original);
+    }
 
 
     /**
@@ -256,41 +277,41 @@ public class OmegaBot extends Robot {
         backRight.setMode(runMode);
     }
 
-//    /**
-//     * Resets the cumulative angle tracking to zero.
-//     */
-//    public void resetAngle() {
-//        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-//
-//        globalAngle = 0;
-//    }
+    /**
+     * Resets the cumulative angle tracking to zero.
+     */
+    public void resetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-//    /**
-//     * Get current cumulative angle rotation from last reset.
-//     * @return Angle in degrees. + = left, - = right.
-//     */
-//    public double getAngle()
-//    {
-//        // We experimentally determined the Z axis is the axis we want to use for heading angle.
-//        // We have to process the angle because the imu works in euler angles so the Z axis is
-//        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
-//        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
-//
-//        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-//
-//        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-//
-//        if (deltaAngle < -180)
-//            deltaAngle += 360;
-//        else if (deltaAngle > 180)
-//            deltaAngle -= 360;
-//
-//        globalAngle += deltaAngle;
-//
-//        lastAngles = angles;
-//
-//        return globalAngle;
-//    }
+        globalAngle = 0;
+    }
+
+    /**
+     * Get current cumulative angle rotation from last reset.
+     * @return Angle in degrees. + = left, - = right.
+     */
+    public double getAngle()
+    {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
 
 //    /**
 //     * Get the real heading {0, 360}

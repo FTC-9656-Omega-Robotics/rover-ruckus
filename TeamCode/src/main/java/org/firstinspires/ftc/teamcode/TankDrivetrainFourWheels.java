@@ -105,7 +105,7 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
      */
     @Override
     public double getCurrentPosition() {
-        return (motors[0].getCurrentPosition() + motors[1].getCurrentPosition() + motors[2].getCurrentPosition() + motors[3].getCurrentPosition()) / 4; //takes an avg of the encoder values for the two front wheels
+        return ( motors[2].getCurrentPosition() + motors[3].getCurrentPosition() ) / 2; //takes an avg of the encoder values for the two front wheels
     }
 
     /**
