@@ -46,7 +46,7 @@ public class AutoTurnTest extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-        robot.turnUsingPID(-270,0.5);
+        robot.turnUsingGyro(-270,0.5);
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}

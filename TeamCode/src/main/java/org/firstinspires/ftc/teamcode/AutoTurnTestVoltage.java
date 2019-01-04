@@ -20,7 +20,7 @@ public class AutoTurnTestVoltage extends LinearOpMode {
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
     private OmegaBot robot;
-    private double robotSpeed = 0.3;
+    private double robotSpeed = 0.6;
 
     @Override
     public void runOpMode() {
@@ -44,7 +44,7 @@ public class AutoTurnTestVoltage extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-        robot.turnUsingPIDVoltage(-270,0.5);
+        robot.turnUsingPIDVoltage(90,robotSpeed);
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
