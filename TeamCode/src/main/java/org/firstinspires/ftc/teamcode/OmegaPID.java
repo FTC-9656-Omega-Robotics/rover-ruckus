@@ -4,7 +4,8 @@ package org.firstinspires.ftc.teamcode;
  * Designed to return power to DcMotors to turn accordingly to gyro
  */
 public class OmegaPID{
-    private double prevError, error, power, derror, pgain, dgain, igain, ierror, threshold, calculatedPower = -100;
+    private double prevError, error, power, derror, pgain, dgain, igain, ierror, threshold;
+    private double calculatedPower = -100;
 
     /**
      * Initialize PID controller with constants for calibration

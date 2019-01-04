@@ -68,7 +68,7 @@ public class AutoDepot extends LinearOpMode {
         telemetry.addData("IsAligned", detector.getAligned()); // Is the bot aligned with the gold mineral?
         telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
         telemetry.addData("Initialization", "Complete");
-        //Determine location of gold cube (threshold radius of 20) and
+
         waitForStart();
         int x = (int) detector.getXPosition();
         detector.disable();
