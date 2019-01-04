@@ -42,7 +42,7 @@ public class OmegaBot extends Robot {
     //3.77953-inch diameter wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1); 27 inch turning diameter
     private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI);
     private final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0/3); //2.0 / 3 is random scale factor
-    private final double errorTolerance = 3; //3 degrees error tolerance
+    private final double errorTolerance = 4; //4 degrees error tolerance
     Orientation lastAngles = new Orientation();
     BNO055IMU imu;
     OmegaPID pid;
@@ -111,7 +111,7 @@ public class OmegaBot extends Robot {
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
 
-        pid = new OmegaPID(0.01, 0.05, 0.01, 2);
+        pid = new OmegaPID(0.00001, 0.0001, 0.00001, errorTolerance);
 
     }
 
@@ -247,18 +247,18 @@ public class OmegaBot extends Robot {
         setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double max = velocity;
         double targetHeading = getAngle() + degrees;
-        frontLeft.setPower(-velocity);
-        backLeft.setPower(-velocity);
-        frontRight.setPower(velocity);
-        backRight.setPower(velocity);
+        int count = 0;
         while (Math.abs(targetHeading - getAngle()) > errorTolerance) {
             velocity = pid.calculatePower(getAngle(), targetHeading, -max, max);
+            telemetry.addData("Count", count);
+            telemetry.addData("Calculated power", pid.getCalculatedPower());
             telemetry.addData("Calculated PID power", velocity);
             telemetry.update();
             frontLeft.setPower(-velocity);
             backLeft.setPower(-velocity);
             frontRight.setPower(velocity);
             backRight.setPower(velocity);
+            count++;
         }
         drivetrain.setVelocity(0);
         setDrivetrainToMode(original);
