@@ -214,7 +214,6 @@ public class OmegaBot extends Robot {
     public void turnUsingGyro(double degrees, double velocity) {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
         setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        double errorTolerance = 0;
         double targetHeading = getAngle() + degrees;
         if (degrees > 0) {
             while (targetHeading - getAngle() > errorTolerance) {
@@ -252,7 +251,7 @@ public class OmegaBot extends Robot {
             velocity = pid.calculatePower(getAngle(), targetHeading, -max, max);
             telemetry.addData("Count", count);
             telemetry.addData("Calculated power", pid.getCalculatedPower());
-            telemetry.addData("Calculated PID power", velocity);
+            telemetry.addData("PID power", velocity);
             telemetry.update();
             frontLeft.setPower(-velocity);
             backLeft.setPower(-velocity);
