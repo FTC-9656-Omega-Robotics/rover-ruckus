@@ -85,40 +85,43 @@ public class AutoCrater extends LinearOpMode {
         robot.move(0.7 * Math.sqrt(72), robotSpeed);
         //Choose corresponding path
         //radius of 40 around the central values
-        if (Math.abs(x-240) < robot.getAUTO_GOLD_RADIUS()) {
-            goldCenter();
+        if (Math.abs(x-178) < robot.getAUTO_GOLD_RADIUS()) {
             telemetry.addLine("goldCenter() selected.");
-        } else if (Math.abs(x-440) < robot.getAUTO_GOLD_RADIUS()) {
-            goldRight();
+            telemetry.update();
+            goldCenter();
+        } else if (Math.abs(x-402) < robot.getAUTO_GOLD_RADIUS()) {
             telemetry.addLine("goldRight() selected.");
+            telemetry.update();
+            goldRight();
         } else {
-            goldLeft();
             telemetry.addLine("goldLeft() selected");
+            telemetry.update();
+            goldLeft();
         }
         finishPath();
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
     public void goldLeft() {
-        robot.turn(49.684, robotSpeed);
-        robot.move(Math.sqrt(1548) + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed);
-        robot.move(- (Math.sqrt(1548) + robot.getMOVE_CORRECTION_ADDENDUM()), robotSpeed);
-        robot.turn(22.620, robotSpeed);
-        robot.move(Math.sqrt(1332) + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed);
+        robot.turn(30.684, robotSpeed);
+        robot.move(Math.sqrt(1548) , robotSpeed);
+        robot.move(- (Math.sqrt(1548)), robotSpeed);
+        robot.turn(18.620, robotSpeed);
+        robot.move(Math.sqrt(1332)  , robotSpeed);
     }
 
     public void goldCenter() {
-        robot.move(3 * Math.sqrt(72) + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed);
-        robot.move(-(3  * Math.sqrt(72) + robot.getMOVE_CORRECTION_ADDENDUM()), robotSpeed);
+        robot.move(3 * Math.sqrt(72) , robotSpeed);
+        robot.move(-(3  * Math.sqrt(72)), robotSpeed);
         robot.turn(49.684 + 22.620, robotSpeed);
-        robot.move(Math.sqrt(1332) + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed);
+        robot.move(Math.sqrt(1332), robotSpeed);
     }
 
     public void goldRight() {
-        robot.turn(-49.684, robotSpeed);
-        robot.move(Math.sqrt(1548) + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed);
-        robot.move(-(Math.sqrt(1548) + robot.getMOVE_CORRECTION_ADDENDUM()), robotSpeed);
-        robot.turn(2 * 49.684 + 22.620, robotSpeed);
+        robot.turn(-35.684, robotSpeed);
+        robot.move(Math.sqrt(1548) , robotSpeed);
+        robot.move(-(Math.sqrt(1548)), robotSpeed);
+        robot.turn(2 * 35.684 + 22.620, robotSpeed);
     }
 
     public void finishPath() {
