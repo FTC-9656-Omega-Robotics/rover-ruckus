@@ -82,7 +82,7 @@ public class OmegaBot extends Robot {
 
         telemetry.addData("Mode", "calibrating...");
         telemetry.update();
-        pid = new OmegaPID(0.01, 0.05, 0.01, 2);
+        pid = new OmegaPID(0.01, 0.05, 0.01, 3);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -254,6 +254,7 @@ public class OmegaBot extends Robot {
             telemetry.addData("Run", count );
             velocity = pid.calculatePower(getAngle(), targetHeading, -max, max);
             telemetry.addData("Calculated PID power", velocity);
+            telemetry.update();
             frontLeft.setPower(-velocity);
             backLeft.setPower(-velocity);
             frontRight.setPower(velocity);
