@@ -45,7 +45,7 @@ public class OmegaBot extends Robot {
     private final double errorTolerance = 4; //4 degrees error tolerance
     Orientation lastAngles = new Orientation();
     BNO055IMU imu;
-    OmegaPID pid;
+    OmegaPID pid, pid1;
     double globalAngle, power = .30, correction;
 
     private double MOVE_CORRECTION_ADDENDUM = 0;
@@ -111,8 +111,8 @@ public class OmegaBot extends Robot {
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
 
-        pid = new OmegaPID(0.00001, 0.0001, 0.00001, errorTolerance);
-
+        pid = new OmegaPID(0.267, 0.3, 0.01, errorTolerance);
+        pid1 = new OmegaPID(0.267, 0.3, 0.01, errorTolerance);
     }
 
     /**
@@ -231,7 +231,7 @@ public class OmegaBot extends Robot {
         while (Math.abs(targetHeading - getAngle()) > errorTolerance) {
             velocity = pid.calculatePower(getAngle(), targetHeading, -max, max);
             telemetry.addData("Count", count);
-            telemetry.addData("Calculated power", pid.getCalculatedPower());
+            telemetry.addData("Calculated power", pid.getDiagnosticCalculatedPower());
             telemetry.addData("PID power", velocity);
             telemetry.update();
             frontLeft.setPower(-velocity);
@@ -243,6 +243,36 @@ public class OmegaBot extends Robot {
         drivetrain.setVelocity(0);
         setDrivetrainToMode(original);
     }
+
+    /**
+     * This method makes the robot turn counterclockwise based on gyro values and PID
+     * Velocity is always positive. Set neg degrees for clockwise turn
+     * pwr in setPower(pwr) is a fraction [-1.0, 1.0] of 12V
+     * @param degrees  desired angle in deg
+     * @param velocity max velocity
+     */
+    public void turnUsingPIDVoltage(double degrees, double velocity) {
+        DcMotor.RunMode original = frontLeft.getMode(); //assume all drive motors r the same runmode
+        setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double max = 12.0 * velocity;
+        double targetHeading = getAngle() + degrees;
+        int count = 0;
+        while (Math.abs(targetHeading - getAngle()) > errorTolerance) {
+            velocity =  (pid1.calculatePower(getAngle(), targetHeading, -max, max) / 12.0); //pid.calculatePower() used here will return a voltage
+            telemetry.addData("Count", count);
+            telemetry.addData("Calculated velocity [-1.0, 1/0]", pid1.getDiagnosticCalculatedPower() / 12.0);
+            telemetry.addData("PID power [-1.0, 1.0]", velocity);
+            telemetry.update();
+            frontLeft.setPower(-velocity);
+            backLeft.setPower(-velocity);
+            frontRight.setPower(velocity);
+            backRight.setPower(velocity);
+            count++;
+        }
+        drivetrain.setVelocity(0);
+        setDrivetrainToMode(original);
+    }
+
 
 
     /**
