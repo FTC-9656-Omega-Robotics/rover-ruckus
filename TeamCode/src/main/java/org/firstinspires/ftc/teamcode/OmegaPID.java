@@ -29,8 +29,8 @@ public class OmegaPID{
      * @return
      */
     public double calculatePower(double currentAngle, double desiredAngle, double minPower, double maxPower){
+        error = desiredAngle - currentAngle;
         if(Math.abs(error)>threshold) {
-            error = desiredAngle - currentAngle;
             ierror += error;
             derror = error - prevError;
             prevError = error;

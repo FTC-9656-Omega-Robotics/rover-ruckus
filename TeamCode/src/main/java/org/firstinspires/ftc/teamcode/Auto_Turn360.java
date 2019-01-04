@@ -27,6 +27,16 @@ public class Auto_Turn360 extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot = new OmegaBot(telemetry, hardwareMap);
+        // make sure the imu gyro is calibrated before continuing.
+        while (!isStopRequested() && !robot.imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status", robot.imu.getCalibrationStatus().toString());
+        telemetry.update();
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -52,13 +62,13 @@ public class Auto_Turn360 extends LinearOpMode {
         telemetry.addData("IsAligned", detector.getAligned()); // Is the bot aligned with the gold mineral?
         telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
         telemetry.addData("Initialization", "Complete");
-        sleep(100);
+        sleep(1000);
         //Determine location of gold cube (threshold radius of 20) and
         int x = (int) detector.getXPosition();
         detector.disable();
         waitForStart();
         runtime.reset();
-        robot.turn(360,0.3);
+        robot.turnUsingPID(90, 0.5);
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
