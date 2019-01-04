@@ -48,7 +48,7 @@ public class OmegaBot extends Robot {
     OmegaPID pid;
     double globalAngle, power = .30, correction;
 
-    private double MOVE_CORRECTION_ADDENDUM = 0.1;
+    private double MOVE_CORRECTION_ADDENDUM = 0;
     private double AUTO_GOLD_RADIUS = 99;
 
     OmegaBot(Telemetry telemetry, HardwareMap hardwareMap) {
@@ -163,10 +163,7 @@ public class OmegaBot extends Robot {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
 
         //Resets encoder values
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Sets target position; left motor moves forward while right motor moves backward
         frontLeft.setTargetPosition((int) (ticksPerDegree * degrees));
@@ -175,36 +172,20 @@ public class OmegaBot extends Robot {
         backRight.setTargetPosition(-1 * (int) (ticksPerDegree * degrees));
 
         //Run to position
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        frontLeft.setPower(velocity);
-        backLeft.setPower(velocity);
-        frontRight.setPower(velocity);
-        backRight.setPower(velocity);
+        drivetrain.setVelocity(velocity);
 
         //While the motors are still running, no other code will run
         while (drivetrain.isPositioning()) {
             telemetry.update();
         }
 
-        //Stops the turn
-        //frontLeft.setPower(0);
-        //backLeft.setPower(0);
-        //frontRight.setPower(0);
-        //backRight.setPower(0);
+        drivetrain.setVelocity(0);
 
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        frontLeft.setMode(originalMode);
-        backLeft.setMode(originalMode);
-        frontRight.setMode(originalMode);
-        backRight.setMode(originalMode);
+        setDrivetrainToMode(originalMode);
     }
 
     /*
