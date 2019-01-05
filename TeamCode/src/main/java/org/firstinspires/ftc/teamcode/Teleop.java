@@ -79,8 +79,6 @@ public class Teleop extends OpMode {
         } else if (gamepad2.y) {
             robot.rightFlip.setPosition(1);
             robot.leftFlip.setPosition(0);
-            //robot.rightFlip.setPosition(0.95);
-            //robot.leftFlip.setPosition(0.05);
         }
 //push button to set lift to maximum height, currently not working
         if (gamepad2.x) {

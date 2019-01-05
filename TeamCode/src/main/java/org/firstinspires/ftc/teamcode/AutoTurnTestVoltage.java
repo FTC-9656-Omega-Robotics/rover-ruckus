@@ -44,7 +44,10 @@ public class AutoTurnTestVoltage extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-        robot.turnUsingPIDVoltage(90,robotSpeed);
+        robot.move(12, robotSpeed);
+        sleep(1000);
+        robot.move(-12, robotSpeed);
+        robot.turnUsingPIDVoltage(360, robotSpeed);
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}

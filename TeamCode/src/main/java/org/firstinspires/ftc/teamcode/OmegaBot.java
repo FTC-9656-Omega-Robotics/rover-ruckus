@@ -40,7 +40,7 @@ public class OmegaBot extends Robot {
     public TankDrivetrainFourWheels drivetrain;
 
     //3.77953-inch diameter wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1); 27 inch turning diameter
-    private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI);
+    private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI) * (12.0/13.75); //12.0/13.75 is a scale factor
     private final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0/3); //2.0 / 3 is random scale factor
     private final double errorTolerance = 2; //2 degrees error tolerance
     Orientation lastAngles = new Orientation();
@@ -96,8 +96,8 @@ public class OmegaBot extends Robot {
         extension.setDirection(DcMotorSimple.Direction.FORWARD);
 
         teamMarker.setPosition(0); //0 is retracted; 1 is extended
-        leftFlip.setPosition(0);
-        rightFlip.setPosition(1);
+        leftFlip.setPosition(0.1);
+        rightFlip.setPosition(0.9);
 
         intake.setPower(0);
         frontLeft.setPower(0);
@@ -148,8 +148,11 @@ public class OmegaBot extends Robot {
         setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
         drivetrain.setTargetPosition(ticksPerInch * inches);
         drivetrain.setVelocity(velocity);
-        while (drivetrain.isPositioning()) {
+        int count = 0;
+        while (frontLeft.isBusy() || frontRight.isBusy() || backLeft.isBusy() || backRight.isBusy()) {
+            telemetry.addData("Drivetrain is positioning. Count:", count);
             telemetry.update();
+            count++;
         }
         drivetrain.setVelocity(0);
         setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

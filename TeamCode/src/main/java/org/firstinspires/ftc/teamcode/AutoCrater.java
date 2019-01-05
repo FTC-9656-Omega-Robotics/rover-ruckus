@@ -36,8 +36,7 @@ public class AutoCrater extends LinearOpMode {
 
 
         // make sure the imu gyro is calibrated before continuing.
-        while (!isStopRequested() && !robot.imu.isGyroCalibrated())
-        {
+        while (!isStopRequested() && !robot.imu.isGyroCalibrated()) {
             sleep(50);
             idle();
         }
@@ -68,6 +67,7 @@ public class AutoCrater extends LinearOpMode {
         telemetry.addData("IsAligned", detector.getAligned()); // Is the bot aligned with the gold mineral?
         telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
         telemetry.addData("Initialization", "Complete");
+        telemetry.update();
 
         waitForStart();
         int x = (int) detector.getXPosition();
@@ -82,7 +82,7 @@ public class AutoCrater extends LinearOpMode {
             telemetry.update();
         }
         robot.lift.setPower(0);
-        robot.move(0.7 * Math.sqrt(72), robotSpeed);
+        robot.move(0.6 * Math.sqrt(72), robotSpeed);
         //Choose corresponding path
         if (Math.abs(x - 178) < robot.getAUTO_GOLD_RADIUS()) {
             telemetry.addLine("goldCenter() selected.");
@@ -97,38 +97,44 @@ public class AutoCrater extends LinearOpMode {
             telemetry.update();
             goldLeft();
         }
-        finishPath();
+        //finishPath();
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
     public void goldLeft() {
-        robot.turn(30.684, robotSpeed);
+        robot.turnUsingPIDVoltage(30.684, robotSpeed);
         robot.move(Math.sqrt(1548), robotSpeed);
         robot.move(-(Math.sqrt(1548)), robotSpeed);
-        robot.turn(18.620, robotSpeed);
+        robot.turnUsingPIDVoltage(18.620, robotSpeed);
         robot.move(Math.sqrt(1332), robotSpeed);
     }
 
     public void goldCenter() {
         robot.move(3 * Math.sqrt(72), robotSpeed);
         robot.move(-(3 * Math.sqrt(72)), robotSpeed);
-        robot.turn(49.684 + 22.620, robotSpeed);
+        robot.turnUsingPIDVoltage(55, robotSpeed);
         robot.move(Math.sqrt(1332), robotSpeed);
+        robot.turnUsingPIDVoltage(60, robotSpeed);
     }
 
     public void goldRight() {
-        robot.turn(-35.684, robotSpeed);
+        robot.turnUsingPIDVoltage(-49.684, robotSpeed);
         robot.move(Math.sqrt(1548), robotSpeed);
         robot.move(-(Math.sqrt(1548)), robotSpeed);
-        robot.turn(2 * 35.684 + 22.620, robotSpeed);
+        robot.turnUsingPIDVoltage(2 * 49.684 + 22.620, robotSpeed);
+
     }
 
+    /**
+     * Robot should be at leftmost point on the fan and oriented toward the depot before executing
+     * this path
+     */
     public void finishPath() {
-        robot.move(Math.sqrt(3636) + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed);
+        robot.move(Math.sqrt(3636), robotSpeed);
         robot.teamMarker.setPosition(0); // 0 is retracted, 0.9 is extended
         sleep(1000);
         robot.teamMarker.setPosition(0.9);
         robot.turn(-174.289, robotSpeed);
-        robot.move(90 + robot.getMOVE_CORRECTION_ADDENDUM(), robotSpeed);
+        robot.move(90, robotSpeed);
     }
 }
