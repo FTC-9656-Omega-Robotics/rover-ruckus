@@ -22,7 +22,7 @@ public class AutoCrater extends LinearOpMode {
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
     private OmegaBot robot;
-    private double robotSpeed = 0.5;
+    private double robotSpeed = 1;
 
     @Override
     public void runOpMode() {
@@ -101,27 +101,28 @@ public class AutoCrater extends LinearOpMode {
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
+    //give up on depositing marker into depot. just parking into crater bc of time constraints.
     public void goldLeft() {
-        robot.turnUsingPIDVoltage(30.684, robotSpeed);
+        robot.turnUsingPIDVoltage(37, robotSpeed);
         robot.move(Math.sqrt(1548), robotSpeed);
-        robot.move(-(Math.sqrt(1548)), robotSpeed);
-        robot.turnUsingPIDVoltage(18.620, robotSpeed);
-        robot.move(Math.sqrt(1332), robotSpeed);
+//        robot.move(-(Math.sqrt(1548)), robotSpeed);
+//        robot.turnUsingPIDVoltage(18.620, robotSpeed);
+//        robot.move(Math.sqrt(1332), robotSpeed);
     }
 
     public void goldCenter() {
         robot.move(3 * Math.sqrt(72), robotSpeed);
-        robot.move(-(3 * Math.sqrt(72)), robotSpeed);
-        robot.turnUsingPIDVoltage(55, robotSpeed);
-        robot.move(Math.sqrt(1332), robotSpeed);
-        robot.turnUsingPIDVoltage(60, robotSpeed);
+//        robot.move(-(3 * Math.sqrt(72) - 2), robotSpeed);
+//        robot.turnUsingPIDVoltage(52, robotSpeed);
+//        robot.move(Math.sqrt(1332) + 5, robotSpeed); // addendum
+//        robot.turnUsingPIDVoltage(78, robotSpeed); // a rough guess
     }
 
     public void goldRight() {
-        robot.turnUsingPIDVoltage(-49.684, robotSpeed);
+        robot.turnUsingPIDVoltage(-37, robotSpeed);
         robot.move(Math.sqrt(1548), robotSpeed);
-        robot.move(-(Math.sqrt(1548)), robotSpeed);
-        robot.turnUsingPIDVoltage(2 * 49.684 + 22.620, robotSpeed);
+//        robot.move(-(Math.sqrt(1548)), robotSpeed);
+//        robot.turnUsingPIDVoltage(2 * 49.684 + 22.620, robotSpeed);
 
     }
 
