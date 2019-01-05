@@ -96,8 +96,8 @@ public class OmegaBot extends Robot {
         extension.setDirection(DcMotorSimple.Direction.FORWARD);
 
         teamMarker.setPosition(0); //0 is retracted; 1 is extended
-        leftFlip.setPosition(0.1);
-        rightFlip.setPosition(0.9);
+        leftFlip.setPosition(0);
+        rightFlip.setPosition(1);
 
         intake.setPower(0);
         frontLeft.setPower(0);

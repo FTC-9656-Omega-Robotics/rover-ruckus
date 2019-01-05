@@ -68,12 +68,18 @@ public class AutoCrater extends LinearOpMode {
         telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
-
         waitForStart();
-        int x = (int) detector.getXPosition();
-        detector.disable();
+        robot.leftFlip.setPosition(0.65);
+        robot.rightFlip.setPosition(0.35);
         runtime.reset();
-
+        int x = 0;
+        while (opModeIsActive() && runtime.seconds() < 2) {
+            x = (int) detector.getXPosition();
+        }
+        detector.disable();
+        robot.leftFlip.setPosition(0.15);
+        robot.rightFlip.setPosition(0.85);
+        runtime.reset();
         int liftMaxHeight = 18100;
         robot.lift.setTargetPosition(-liftMaxHeight);
         robot.lift.setPower(-1);
@@ -103,8 +109,11 @@ public class AutoCrater extends LinearOpMode {
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
     //give up on depositing marker into depot. just parking into crater bc of time constraints.
     public void goldLeft() {
-        robot.turnUsingPIDVoltage(37, robotSpeed);
+        robot.turnUsingPIDVoltage(33, robotSpeed);
         robot.move(Math.sqrt(1548), robotSpeed);
+        robot.leftFlip.setPosition(0.5);
+        robot.rightFlip.setPosition(0.5);
+        sleep(2000);
 //        robot.move(-(Math.sqrt(1548)), robotSpeed);
 //        robot.turnUsingPIDVoltage(18.620, robotSpeed);
 //        robot.move(Math.sqrt(1332), robotSpeed);
@@ -112,6 +121,9 @@ public class AutoCrater extends LinearOpMode {
 
     public void goldCenter() {
         robot.move(3 * Math.sqrt(72), robotSpeed);
+        robot.leftFlip.setPosition(0.5);
+        robot.rightFlip.setPosition(0.5);
+        sleep(2000);
 //        robot.move(-(3 * Math.sqrt(72) - 2), robotSpeed);
 //        robot.turnUsingPIDVoltage(52, robotSpeed);
 //        robot.move(Math.sqrt(1332) + 5, robotSpeed); // addendum
@@ -119,8 +131,11 @@ public class AutoCrater extends LinearOpMode {
     }
 
     public void goldRight() {
-        robot.turnUsingPIDVoltage(-37, robotSpeed);
+        robot.turnUsingPIDVoltage(-33, robotSpeed);
         robot.move(Math.sqrt(1548), robotSpeed);
+        robot.leftFlip.setPosition(0.5);
+        robot.rightFlip.setPosition(0.5);
+        sleep(2000);
 //        robot.move(-(Math.sqrt(1548)), robotSpeed);
 //        robot.turnUsingPIDVoltage(2 * 49.684 + 22.620, robotSpeed);
 

@@ -41,23 +41,11 @@ public class TeleopMovementTest extends OpMode {
      */
     @Override
     public void loop() {
-        robot.frontLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
-        robot.backLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
-
-        robot.frontRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
-        robot.backRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
-
         if(gamepad1.a) {
-            robot.move(24, 0.8);
+            robot.teamMarker.setPosition(1);
         } else if (gamepad1.b) {
-            robot.move(-24, 0.8);
-        } else if (gamepad1.x) {
-            robot.turnUsingGyro(180, 0.8);
-        } else if (gamepad1.y) {
-            robot.turnUsingGyro(-180, 0.8);
+            robot.teamMarker.setPosition(0);
         }
-
-
 
         telemetry.addData("arm pos", robot.arm.getCurrentPosition());
         telemetry.addData("front_left pos", robot.frontLeft.getCurrentPosition());

@@ -22,7 +22,7 @@ public class AutoDepot extends LinearOpMode {
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
     private OmegaBot robot;
-    private double robotSpeed = 0.5;
+    private double robotSpeed = 1;
 
     @Override
     public void runOpMode() {
@@ -32,19 +32,18 @@ public class AutoDepot extends LinearOpMode {
         robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-//        //GYRO SETUP
-//
-//
-//        // make sure the imu gyro is calibrated before continuing.
-//        while (!isStopRequested() && !robot.imu.isGyroCalibrated())
-//        {
-//            sleep(50);
-//            idle();
-//        }
-//
-//        telemetry.addData("Mode", "waiting for start");
-//        telemetry.addData("imu calib status", robot.imu.getCalibrationStatus().toString());
-//        telemetry.update();
+        //GYRO SETUP
+
+
+        // make sure the imu gyro is calibrated before continuing.
+        while (!isStopRequested() && !robot.imu.isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status", robot.imu.getCalibrationStatus().toString());
+        telemetry.update();
 
         // Set up detector
         detector = new GoldAlignDetector(); // Create detector
@@ -68,12 +67,19 @@ public class AutoDepot extends LinearOpMode {
         telemetry.addData("IsAligned", detector.getAligned()); // Is the bot aligned with the gold mineral?
         telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
         telemetry.addData("Initialization", "Complete");
-
+        telemetry.update();
         waitForStart();
-        int x = (int) detector.getXPosition();
-        detector.disable();
+        robot.leftFlip.setPosition(0.65);
+        robot.rightFlip.setPosition(0.35);
         runtime.reset();
-
+        int x = 0;
+        while (opModeIsActive() && runtime.seconds() < 2) {
+            x = (int) detector.getXPosition();
+        }
+        detector.disable();
+        robot.leftFlip.setPosition(0.15);
+        robot.rightFlip.setPosition(0.85);
+        runtime.reset();
         int liftMaxHeight = 18100;
         robot.lift.setTargetPosition(-liftMaxHeight);
         robot.lift.setPower(-1);
@@ -82,16 +88,13 @@ public class AutoDepot extends LinearOpMode {
             telemetry.update();
         }
         robot.lift.setPower(0);
-        robot.move(0.7 * Math.sqrt(72), robotSpeed);
-        robot.lift.setTargetPosition(-1);
-
+        robot.move(0.6 * Math.sqrt(72), robotSpeed);
         //Choose corresponding path
-        //radius of 40 around the central values
-        if (Math.abs(x-178) < robot.getAUTO_GOLD_RADIUS()) {
+        if (Math.abs(x - 178) < robot.getAUTO_GOLD_RADIUS()) {
             telemetry.addLine("goldCenter() selected.");
             telemetry.update();
             goldCenter();
-        } else if (Math.abs(x-402) < robot.getAUTO_GOLD_RADIUS()) {
+        } else if (Math.abs(x - 402) < robot.getAUTO_GOLD_RADIUS()) {
             telemetry.addLine("goldRight() selected.");
             telemetry.update();
             goldRight();
@@ -105,32 +108,38 @@ public class AutoDepot extends LinearOpMode {
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
     public void goldLeft() {
-        robot.turn(20.392, 0.3); // turn() method takes in a pos arg NOW to turn left
-        robot.teamMarker.setPosition(0.9);
-        robot.move(Math.sqrt(1140), .3);
-        //then head to depot
-        robot.turn(-52.061, robotSpeed);
-        robot.move(Math.sqrt(1400) + robot.getMOVE_CORRECTION_ADDENDUM(), .3); //add addendum to compensate for real-life unexpected gap
-        robot.teamMarker.setPosition(0); // 0 is extended, 0.9 is withdrawn
-        sleep(1000);
-        robot.move(-4,.3);
+        robot.turnUsingPIDVoltage(33, robotSpeed);
+        robot.move(Math.sqrt(1548) - 4, robotSpeed);
+        robot.turnUsingPIDVoltage(-55, robotSpeed);
+        robot.move(Math.sqrt(1548) - 4, robotSpeed);
+        robot.leftFlip.setPosition(0.6);
+        robot.rightFlip.setPosition(0.4);
+        sleep(500);
+        robot.teamMarker.setPosition(1);
+        sleep(500);
+        robot.move(-(Math.sqrt(1548) - 4), robotSpeed);
+        robot.turnUsingPIDVoltage(50, robotSpeed);
+        robot.move(-(Math.sqrt(1548) - 4), robotSpeed);
+        robot.turnUsingPIDVoltage(-33, robotSpeed);
     }
 
     public void goldCenter() {
-        robot.move(7 * Math.sqrt(72) + robot.getMOVE_CORRECTION_ADDENDUM()-7, robotSpeed);
-        robot.teamMarker.setPosition(0); // 0 is extended, 0.9 is withdrawn
+        robot.move(3 * Math.sqrt(72) + 24, robotSpeed);
+        robot.leftFlip.setPosition(0.6);
+        robot.rightFlip.setPosition(0.4);
         sleep(1000);
-        robot.teamMarker.setPosition(0.9);
-        robot.move(-4,.3);
+        robot.teamMarker.setPosition(1);
+        sleep(1000);
+        robot.move(- (3 * Math.sqrt(72) + 24), robotSpeed);
     }
 
 
     public void goldRight() {
-        robot.turn(-40, .3);
-        robot.move(Math.sqrt(1220)-10, 0.3);
+        robot.turnUsingPIDVoltage(-40, robotSpeed);
+        robot.move(Math.sqrt(1220)-10, robotSpeed);
         //then head to depot
-        robot.turn(45.392, robotSpeed);
-        robot.move(Math.sqrt(1440) + robot.getMOVE_CORRECTION_ADDENDUM(), 0.3);
+        robot.turnUsingPIDVoltage(45.392, robotSpeed);
+        robot.move(Math.sqrt(1440), 0.3);
         robot.teamMarker.setPosition(0); // 0 is extended, 0.9 is withdrawn
         robot.move(-4,.3);
         sleep(1000);
