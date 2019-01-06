@@ -27,29 +27,29 @@ public class AutoCraterExp extends AutoBaseRoverRuckus {
         robot.leftFlip.setPosition(0.5);
         robot.rightFlip.setPosition(0.5);
         sleep(2000);
-//        robot.move(-(Math.sqrt(1548)), robotSpeed);
-//        robot.turnUsingPIDVoltage(18.620, robotSpeed);
-//        robot.move(Math.sqrt(1332), robotSpeed);
+//        move(-(Math.sqrt(1548)), robotSpeed);
+//        turnUsingPIDVoltage(18.620, robotSpeed);
+//        move(Math.sqrt(1332), robotSpeed);
     }
 
     public void goldCenter() {
-        robot.move(3 * Math.sqrt(72) - 3, robotSpeed);
+        move(3 * Math.sqrt(72) - 3, robotSpeed);
         robot.leftFlip.setPosition(0.5);
         robot.rightFlip.setPosition(0.5);
         sleep(2000);
-//        robot.move(-(3 * Math.sqrt(72) - 2), robotSpeed);
-//        robot.turnUsingPIDVoltage(52, robotSpeed);
-//        robot.move(Math.sqrt(1332) + 5, robotSpeed); // addendum
-//        robot.turnUsingPIDVoltage(78, robotSpeed); // a rough guess
+//        move(-(3 * Math.sqrt(72) - 2), robotSpeed);
+//        turnUsingPIDVoltage(52, robotSpeed);
+//        move(Math.sqrt(1332) + 5, robotSpeed); // addendum
+//        turnUsingPIDVoltage(78, robotSpeed); // a rough guess
     }
 
     public void goldRight() {
-        robot.turnUsingPIDVoltage(-33, robotSpeed);
-        robot.move(Math.sqrt(1548) - 3, robotSpeed);
+        turnUsingPIDVoltage(-33, robotSpeed);
+        move(Math.sqrt(1548) - 3, robotSpeed);
         robot.leftFlip.setPosition(0.5);
         robot.rightFlip.setPosition(0.5);
         sleep(2000);
-//        robot.move(-(Math.sqrt(1548)), robotSpeed);
+//        move(-(Math.sqrt(1548)), robotSpeed);
 //        robot.turnUsingPIDVoltage(2 * 49.684 + 22.620, robotSpeed);
 
     }
@@ -59,11 +59,11 @@ public class AutoCraterExp extends AutoBaseRoverRuckus {
      * this path
      */
     public void finishPath() {
-        robot.move(Math.sqrt(3636), robotSpeed);
+        move(Math.sqrt(3636), robotSpeed);
         robot.teamMarker.setPosition(0); // 0 is retracted, 0.9 is extended
         sleep(1000);
         robot.teamMarker.setPosition(0.9);
-        robot.turn(-174.289, robotSpeed);
-        robot.move(90, robotSpeed);
+        turnUsingPIDVoltage(-174.289, robotSpeed);
+        move(90, robotSpeed);
     }
 }

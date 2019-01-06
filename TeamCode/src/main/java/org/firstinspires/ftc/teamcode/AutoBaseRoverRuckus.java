@@ -13,7 +13,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public abstract class AutoBaseRoverRuckus extends LinearOpMode {
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
-    public double robotSpeed = 1;
+    public double robotSpeed = 0.8;
+    int liftMaxHeight = 3500;
     OmegaBot robot;
 
     public void runOpMode() {
@@ -69,7 +70,6 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         robot.leftFlip.setPosition(0.15);
         robot.rightFlip.setPosition(0.85);
         runtime.reset();
-        int liftMaxHeight = 18100;
         robot.lift.setTargetPosition(-liftMaxHeight);
         robot.lift.setPower(-1);
         while (opModeIsActive() && robot.lift.isBusy() && robot.lift.getCurrentPosition() < liftMaxHeight) {
@@ -102,7 +102,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         robot.drivetrain.setTargetPosition(robot.getTicksPerInch() * inches);
         robot.drivetrain.setVelocity(velocity);
         int count = 0;
-        while (opModeIsActive() && (count < 450 && (robot.frontLeft.isBusy() || robot.frontRight.isBusy() || robot.backLeft.isBusy() || robot.backRight.isBusy()))) {
+        while (opModeIsActive() && (count < 600 && (robot.frontLeft.isBusy() || robot.frontRight.isBusy() || robot.backLeft.isBusy() || robot.backRight.isBusy()))) {
             telemetry.addData("Drivetrain is positioning. Count:", count);
             telemetry.update();
             count++;
@@ -120,7 +120,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         robot.drivetrain.setTargetPosition(robot.getTicksPerInch() * inches);
         robot.drivetrain.setVelocity(velocity);
         int count = 0;
-        while (opModeIsActive() && (count < 450 && (robot.frontLeft.isBusy() || robot.frontRight.isBusy() || robot.backLeft.isBusy() || robot.backRight.isBusy()))) {
+        while (opModeIsActive() && (count < 600 && (robot.frontLeft.isBusy() || robot.frontRight.isBusy() || robot.backLeft.isBusy() || robot.backRight.isBusy()))) {
             telemetry.addData("Drivetrain is positioning. Count:", count);
             telemetry.update();
             count++;

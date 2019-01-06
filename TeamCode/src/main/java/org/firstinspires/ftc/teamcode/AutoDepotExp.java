@@ -26,7 +26,7 @@ public class AutoDepotExp extends AutoBaseRoverRuckus {
     public void goldLeft() {
         turnUsingPIDVoltage(33, robotSpeed);
         move(Math.sqrt(1548) - 8, robotSpeed);
-        turnUsingPIDVoltage(-50, robotSpeed);
+        turnUsingPIDVoltage(-55, robotSpeed);
         move(Math.sqrt(1548) - 18, robotSpeed);
         robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
@@ -34,7 +34,7 @@ public class AutoDepotExp extends AutoBaseRoverRuckus {
         robot.teamMarker.setPosition(1);
         sleep(100);
         move(-(Math.sqrt(1548) - 18), robotSpeed);
-        turnUsingPIDVoltage(50, robotSpeed);
+        turnUsingPIDVoltage(55, robotSpeed);
         move(-(Math.sqrt(1548) - 8), robotSpeed);
         turnUsingPIDVoltage(-33, robotSpeed);
     }
@@ -53,7 +53,7 @@ public class AutoDepotExp extends AutoBaseRoverRuckus {
     public void goldRight() {
         turnUsingPIDVoltage(-33, robotSpeed);
         move(Math.sqrt(1548) - 8, robotSpeed);
-        turnUsingPIDVoltage(50, robotSpeed);
+        turnUsingPIDVoltage(55, robotSpeed);
         move(Math.sqrt(1548) - 18, robotSpeed);
         robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
@@ -61,7 +61,7 @@ public class AutoDepotExp extends AutoBaseRoverRuckus {
         robot.teamMarker.setPosition(1);
         sleep(100);
         move(-(Math.sqrt(1548) - 18), robotSpeed);
-        turnUsingPIDVoltage(-50, robotSpeed);
+        turnUsingPIDVoltage(-55, robotSpeed);
         move(-(Math.sqrt(1548) - 8), robotSpeed);
         turnUsingPIDVoltage(33, robotSpeed);
     }
