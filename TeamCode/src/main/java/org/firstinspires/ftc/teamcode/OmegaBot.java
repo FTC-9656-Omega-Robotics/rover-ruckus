@@ -40,7 +40,7 @@ public class OmegaBot extends Robot {
     public TankDrivetrainFourWheels drivetrain;
 
     //3.77953-inch diameter wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1); 27 inch turning diameter
-    private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI) * (12.0/13.75); //12.0/13.75 is a scale factor
+    private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI);
     private final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0/3); //2.0 / 3 is random scale factor
     private final double errorTolerance = 2; //2 degrees error tolerance
     Orientation lastAngles = new Orientation();
@@ -114,33 +114,6 @@ public class OmegaBot extends Robot {
         pid = new OmegaPID(0.015, 0.00008 , 0.05, errorTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
     }
 
-    /**
-     * Move the drivetrain forward by 100 units.
-     */
-    public void moveForward100() {
-        DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
-        setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
-        drivetrain.setTargetPosition(100);
-        drivetrain.setVelocity(0.5);
-        while (drivetrain.isPositioning()) {
-        }
-        drivetrain.setVelocity(0);
-        setDrivetrainToMode(originalMode); //revert to original mode once done
-    }
-
-    /**
-     * Move the drivetrain forward by 100 units.
-     */
-    public void moveBackward100() {
-        DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
-        setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
-        drivetrain.setTargetPosition(-100);
-        drivetrain.setVelocity(-0.5);
-        while (drivetrain.isPositioning()) {
-        }
-        drivetrain.setVelocity(0);
-        setDrivetrainToMode(originalMode); //revert to original mode once done
-    }
 
     public void move(double inches, double velocity) {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
@@ -367,5 +340,13 @@ public class OmegaBot extends Robot {
 
     public double getAUTO_GOLD_RADIUS() {
         return AUTO_GOLD_RADIUS;
+    }
+
+    public double getTicksPerInch() {
+        return ticksPerInch;
+    }
+
+    public double getErrorTolerance() {
+        return errorTolerance;
     }
 }

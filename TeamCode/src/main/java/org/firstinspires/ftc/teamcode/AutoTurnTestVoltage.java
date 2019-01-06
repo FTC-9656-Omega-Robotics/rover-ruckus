@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name = "AutoTurnTestVoltage", group = "Testers")
 //@Disabled
 
-public class AutoTurnTestVoltage extends LinearOpMode {
+public class AutoTurnTestVoltage extends AutoBaseRoverRuckus {
 
 
     private int initialPos, finalPos;
@@ -44,7 +44,7 @@ public class AutoTurnTestVoltage extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-        robot.turnUsingPIDVoltage(180, 1.0);
+        move(robot,24, 1);
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}

@@ -71,14 +71,14 @@ public class Teleop extends OpMode {
             robot.leftFlip.setPosition(0.56);
         }
         if (gamepad2.a && robot.extension.getCurrentPosition() < 250) {
-            robot.rightFlip.setPosition(0.45);
-            robot.leftFlip.setPosition(0.55);
+            robot.rightFlip.setPosition(0.34);
+            robot.leftFlip.setPosition(0.66);
         } else if (gamepad2.b) {
             robot.rightFlip.setPosition(0.7);
             robot.leftFlip.setPosition(0.3);
         } else if (gamepad2.y) {
-            robot.rightFlip.setPosition(1);
-            robot.leftFlip.setPosition(0);
+            robot.rightFlip.setPosition(0.9);
+            robot.leftFlip.setPosition(0.1);
         }
 //push button to set lift to maximum height, currently not working
         if (gamepad2.x) {
