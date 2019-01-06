@@ -14,7 +14,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
     public double robotSpeed = 0.8;
-    int liftMaxHeight = 3500;
+    int liftMaxHeight = 3590;
     OmegaBot robot;
 
     public void runOpMode() {
@@ -24,10 +24,11 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //GYRO SETUP
-
+        runtime.reset();
         // make sure the imu gyro is calibrated before continuing.
-        while (!isStopRequested() && !robot.imu.isGyroCalibrated()) {
-            sleep(50);
+        while (!isStopRequested() && !robot.imu.isGyroCalibrated() && runtime.seconds() < 2) {
+            telemetry.addLine("Gyro is calibrating");
+            telemetry.update();
             idle();
         }
 
@@ -35,6 +36,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         telemetry.addData("imu calib status", robot.imu.getCalibrationStatus().toString());
         telemetry.update();
 
+        waitForStart();
         // Set up detector
         detector = new GoldAlignDetector(); // Create detector
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
@@ -58,12 +60,12 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
-        waitForStart();
+
         robot.leftFlip.setPosition(0.65);
         robot.rightFlip.setPosition(0.35);
         runtime.reset();
         int x = 0;
-        while (opModeIsActive() && runtime.seconds() < 2) {
+        while (opModeIsActive() && runtime.seconds() < 3) {
             x = (int) detector.getXPosition();
         }
         detector.disable();
@@ -72,7 +74,8 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         runtime.reset();
         robot.lift.setTargetPosition(-liftMaxHeight);
         robot.lift.setPower(-1);
-        while (opModeIsActive() && robot.lift.isBusy() && robot.lift.getCurrentPosition() < liftMaxHeight) {
+        runtime.reset();
+        while (opModeIsActive() && robot.lift.isBusy() && robot.lift.getCurrentPosition() < liftMaxHeight && runtime.seconds() < 12) {
             telemetry.addData("lift", robot.lift.getCurrentPosition());
             telemetry.update();
         }

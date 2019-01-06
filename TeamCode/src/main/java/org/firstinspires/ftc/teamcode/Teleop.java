@@ -82,28 +82,23 @@ public class Teleop extends OpMode {
 //            robot.leftFlip.setPosition(0.1);
 
 
-        //Domains for flip positions when extensions are within a certain range. Domains have length 570. (0.63 - 0.655) / 3100 = -0.00460
+        //Domains for flip positions when extensions are within a certain range. Domains have length 570. (0.63 - 0.655) / 3100 * 570 = -0.00460
         if (gamepad2.a && (robot.extension.getCurrentPosition() >= 2530 && robot.extension.getCurrentPosition() < 4000)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.63);
             robot.rightFlip.setPosition(0.37);
-        }
-        else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1960 && robot.extension.getCurrentPosition() < 2530)) { //upper bound of 3100 is just pushed to 4000 as safeguard
+        } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1960 && robot.extension.getCurrentPosition() < 2530)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6366);
             robot.rightFlip.setPosition(1 - 0.6366);
-        }
-        else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1390 && robot.extension.getCurrentPosition() < 1960)) { //upper bound of 3100 is just pushed to 4000 as safeguard
+        } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1390 && robot.extension.getCurrentPosition() < 1960)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6412);
             robot.rightFlip.setPosition(1 - 0.6412);
-        }
-        else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 820 && robot.extension.getCurrentPosition() < 1390)) { //upper bound of 3100 is just pushed to 4000 as safeguard
+        } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 820 && robot.extension.getCurrentPosition() < 1390)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6458);
             robot.rightFlip.setPosition(1 - 0.6458);
-        }
-        else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 250 && robot.extension.getCurrentPosition() < 820)) { //upper bound of 3100 is just pushed to 4000 as safeguard
+        } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 250 && robot.extension.getCurrentPosition() < 820)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6504);
             robot.rightFlip.setPosition(1 - 0.6504);
-        }
-        else if (gamepad2.a && robot.extension.getCurrentPosition() < 250) {
+        } else if (gamepad2.a && robot.extension.getCurrentPosition() < 250) {
             robot.leftFlip.setPosition(0.655);
             robot.rightFlip.setPosition(0.345);
         } else if (gamepad2.b) {
@@ -124,26 +119,16 @@ public class Teleop extends OpMode {
         //push buttons for moving arm to set positions
         if (gamepad2.right_bumper) {
             robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            int armMaxHeight = 500;
+            int armMaxHeight = 600;
             robot.arm.setTargetPosition(armMaxHeight);
-            robot.arm.setPower(0.3);
-            while (robot.arm.isBusy()) {
-                telemetry.update();
-            }
-            robot.arm.setPower(0);
-            robot.arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.arm.setPower(0.5);
         }
 
         if (gamepad2.right_trigger > 0.2) {
             robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             int armMinHeight = 0;
             robot.arm.setTargetPosition(armMinHeight);
-            robot.arm.setPower(-0.3);
-            while (robot.arm.isBusy()) {
-                telemetry.update();
-            }
-            robot.arm.setPower(0);
-            robot.arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.arm.setPower(-0.5);
         }
 
 

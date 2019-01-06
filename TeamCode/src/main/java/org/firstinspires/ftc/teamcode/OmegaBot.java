@@ -49,7 +49,7 @@ public class OmegaBot extends Robot {
     double globalAngle, power = .30, correction;
 
     private double MOVE_CORRECTION_ADDENDUM = 0;
-    private double AUTO_GOLD_RADIUS = 99;
+    private double AUTO_GOLD_RADIUS = 110;
 
     OmegaBot(Telemetry telemetry, HardwareMap hardwareMap) {
         super(telemetry, hardwareMap);
