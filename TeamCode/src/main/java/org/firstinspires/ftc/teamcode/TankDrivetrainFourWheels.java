@@ -15,7 +15,7 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
 
     private double targetPosition = 0;
 
-    private DcMotor.RunMode[] runModes = new DcMotor.RunMode[2]; //We have two possible run modes.
+    private DcMotor.RunMode[] runModes = new DcMotor.RunMode[4]; //We have two possible run modes.
 
     private double[] wheelTargetPositions = new double[2]; //Target encoder values for two front wheels
 
@@ -105,7 +105,7 @@ public class TankDrivetrainFourWheels extends Drivetrain implements Rotatable, P
      */
     @Override
     public double getCurrentPosition() {
-        return (motors[0].getCurrentPosition() + motors[1].getCurrentPosition() + motors[2].getCurrentPosition() + motors[3].getCurrentPosition()) / 4; //takes an avg of the encoder values for the two front wheels
+        return ( motors[0].getCurrentPosition() + motors[1].getCurrentPosition() + motors[2].getCurrentPosition() + motors[3].getCurrentPosition() ) / 4; //takes an avg of the encoder values for the 4 wheels
     }
 
     /**

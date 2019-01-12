@@ -37,16 +37,17 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name="GoldAlign Example", group="DogeCV")
+@TeleOp(name = "GoldAlign Example", group = "DogeCV")
 
-public class GoldAlignExample extends OpMode
-{
+public class GoldAlignExample extends OpMode {
     // Detector object
     private GoldAlignDetector detector;
+    OmegaBot robot;
 
 
     @Override
     public void init() {
+        robot = new OmegaBot(telemetry, hardwareMap);
         telemetry.addData("Status", "DogeCV 2018.0 - Gold Align Example");
 
         // Set up detector
@@ -91,8 +92,14 @@ public class GoldAlignExample extends OpMode
      */
     @Override
     public void loop() {
-        telemetry.addData("IsAligned" , detector.getAligned()); // Is the bot aligned with the gold mineral?
-        telemetry.addData("X Pos" , detector.getXPosition()); // Gold X position.
+        if (gamepad1.a) {
+            robot.rightFlip.setPosition(0.35);
+            robot.leftFlip.setPosition(0.65);
+        }
+        telemetry.addData("IsAligned", detector.getAligned()); // Is the bot aligned with the gold mineral?
+        telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
+        telemetry.addData("left_flip pos", robot.leftFlip.getPosition());
+        telemetry.addData("right_flip pos", robot.rightFlip.getPosition());
     }
 
     /*
