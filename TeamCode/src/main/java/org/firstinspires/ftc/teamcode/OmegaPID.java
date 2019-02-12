@@ -41,7 +41,7 @@ public class OmegaPID{
             iError += error;
             dError = error - prevError;
             prevError = error;
-            double power = (error * pGain) - (dError * dGain) + (iError * iGain);
+            double power = (error * pGain) + (dError * dGain) + (iError * iGain);
             diagnosticCalculatedPower = power;
             if (power > maxPower) {
                 return maxPower;
