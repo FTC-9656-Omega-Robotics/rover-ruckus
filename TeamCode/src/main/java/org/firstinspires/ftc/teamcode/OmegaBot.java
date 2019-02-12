@@ -111,8 +111,8 @@ public class OmegaBot extends Robot {
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
 
-        pid = new OmegaPID(0.015, 0.00008 , 0.05, errorTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
-    }
+        pid = new OmegaPID(0.25, 0.00008 , 0.5, errorTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
+    }//.25,.00008,.5
 
 
     public void move(double inches, double velocity) {

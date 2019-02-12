@@ -99,8 +99,8 @@ public class Teleop extends OpMode {
             robot.leftFlip.setPosition(0.6504);
             robot.rightFlip.setPosition(1 - 0.6504);
         } else if (gamepad2.a && robot.extension.getCurrentPosition() < 250) {
-            robot.leftFlip.setPosition(0.655);
-            robot.rightFlip.setPosition(0.345);
+            robot.leftFlip.setPosition(0.6);
+            robot.rightFlip.setPosition(0.4);
         } else if (gamepad2.b) {
             robot.rightFlip.setPosition(0.7);
             robot.leftFlip.setPosition(0.3);
@@ -185,7 +185,7 @@ public class Teleop extends OpMode {
             robot.intake.setPower(0);
         }
 
-        robot.extension.setPower(-gamepad2.left_stick_y * 0.7);
+        robot.extension.setPower(-gamepad2.left_stick_y);
 
         //if(robot.extension.getCurrentPosition()>5) robot.extension.setPower(-gamepad2.left_stick_y*0.4);
         //else robot.extension.setPower(0);
