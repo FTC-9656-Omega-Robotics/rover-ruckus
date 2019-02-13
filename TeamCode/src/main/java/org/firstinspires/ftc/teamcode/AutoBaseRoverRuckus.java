@@ -20,8 +20,8 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
     public void runOpMode() {
         robot = new OmegaBot(telemetry, hardwareMap);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //GYRO SETUP
         runtime.reset();
@@ -100,9 +100,9 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
 
     public void move(double inches, double velocity) {
         DcMotor.RunMode originalMode = robot.frontLeft.getMode(); //Assume that all wheels have the same runmode
-        robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.drivetrain.setTargetPosition(robot.getTicksPerInch() * inches);
+        robot.drivetrain.setRunMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+        robot.drivetrain.setRunMode((DcMotor.RunMode.RUN_TO_POSITION));
+        robot.drivetrain.setTargetPosition((robot.getTicksPerInch() * inches));
         robot.drivetrain.setVelocity(velocity);
         int count = 0;
         while (opModeIsActive() && (count < 600 && (robot.frontLeft.isBusy() || robot.frontRight.isBusy() || robot.backLeft.isBusy() || robot.backRight.isBusy()))) {
@@ -112,14 +112,14 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         }
 
         robot.drivetrain.setVelocity(0);
-        robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.setDrivetrainToMode(originalMode);
+        robot.drivetrain.setRunMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+        robot.drivetrain.setRunMode((originalMode));
     }
 
     public void move(OmegaBot robot, double inches, double velocity) {
         DcMotor.RunMode originalMode = robot.frontLeft.getMode(); //Assume that all wheels have the same runmode
-        robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.drivetrain.setTargetPosition(robot.getTicksPerInch() * inches);
         robot.drivetrain.setVelocity(velocity);
         int count = 0;
@@ -129,8 +129,8 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
             count++;
         }
         robot.drivetrain.setVelocity(0);
-        robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.setDrivetrainToMode(originalMode);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.drivetrain.setRunMode(originalMode);
     }
 
     /**
@@ -143,7 +143,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
      */
     public void turnUsingPIDVoltage(double degrees, double velocity) {
         DcMotor.RunMode original = robot.frontLeft.getMode(); //assume all drive motors r the same runmode
-        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double max = 12.0 * velocity;
         double targetHeading = robot.getAngle() + degrees;
         int count = 0;
@@ -160,7 +160,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
             count++;
         }
         robot.drivetrain.setVelocity(0);
-        robot.setDrivetrainToMode(original);
+        robot.drivetrain.setRunMode(original);
     }
     /**
      * This method makes the robot turn counterclockwise based on gyro values and PID
@@ -173,7 +173,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
      */
     public void turnUsingPIDVoltage(OmegaBot robot, double degrees, double velocity) {
         DcMotor.RunMode original = robot.frontLeft.getMode(); //assume all drive motors r the same runmode
-        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double max = 12.0 * velocity;
         double targetHeading = robot.getAngle() + degrees;
         int count = 0;
@@ -190,7 +190,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
             count++;
         }
         robot.drivetrain.setVelocity(0);
-        robot.setDrivetrainToMode(original);
+        robot.drivetrain.setRunMode(original);
     }
 
     abstract public void goldLeft();

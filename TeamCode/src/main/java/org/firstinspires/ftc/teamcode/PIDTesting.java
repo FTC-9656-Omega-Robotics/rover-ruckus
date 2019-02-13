@@ -13,8 +13,8 @@ public class PIDTesting extends AutoBaseRoverRuckus {
     public void runOpMode(){
         robot = new OmegaBot(telemetry, hardwareMap);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.turnUsingPIDVoltage(-90, robotSpeed);
     }
 

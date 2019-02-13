@@ -37,7 +37,7 @@ public class OmegaBot extends Robot {
     DcMotor.RunMode myRunMode = DcMotor.RunMode.RUN_TO_POSITION;
     public ServoActivator leftFlipActivator;
     public ServoActivator rightFlipActivator;
-    public TankDrivetrainFourWheels drivetrain;
+    public OmegaDriveTrain drivetrain;
 
     //3.77953-inch diameter wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1); 27 inch turning diameter
     private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI);
@@ -106,8 +106,8 @@ public class OmegaBot extends Robot {
         backRight.setPower(0);
         lift.setPower(0);
 
-        drivetrain = new TankDrivetrainFourWheels(frontLeft, frontRight, backLeft, backRight);
-        setDrivetrainToMode(myRunMode);
+        drivetrain = new OmegaDriveTrain(frontLeft, frontRight, backLeft, backRight);
+        drivetrain.setRunMode(myRunMode);
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -118,19 +118,31 @@ public class OmegaBot extends Robot {
 
     public void move(double inches, double velocity) {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
-        setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drivetrain.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
         drivetrain.setTargetPosition(ticksPerInch * inches);
         drivetrain.setVelocity(velocity);
         int count = 0;
-        while (frontLeft.isBusy() || frontRight.isBusy() || backLeft.isBusy() || backRight.isBusy()) {
+        while (frontLeft.isBusy() || frontRight.isBusy() || backLeft.isBusy() || backRight.isBusy() && count < 500) {
             telemetry.addData("Drivetrain is positioning. Count:", count);
             telemetry.update();
             count++;
         }
         drivetrain.setVelocity(0);
-        setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setDrivetrainToMode(originalMode);
+        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drivetrain.setRunMode(originalMode);
+    }
+
+    public void moveExp(double inches, double velocity) {
+        double target = ticksPerInch * inches;
+        DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
+        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        while(target-drivetrain.getAvgEncoderValueOfFrontWheels() > 100) {
+            drivetrain.setVelocity(velocity);
+        }
+        drivetrain.setVelocity(0);
+        drivetrain.setRunMode(originalMode);
     }
 
     //This method makes the robot turn counterclockwise
@@ -139,7 +151,7 @@ public class OmegaBot extends Robot {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
 
         //Resets encoder values
-        setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Sets target position; left motor moves forward while right motor moves backward
         frontLeft.setTargetPosition((int) (ticksPerDegree * degrees));
@@ -148,7 +160,7 @@ public class OmegaBot extends Robot {
         backRight.setTargetPosition(-1 * (int) (ticksPerDegree * degrees));
 
         //Run to position
-        setDrivetrainToMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drivetrain.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         drivetrain.setVelocity(velocity);
 
@@ -159,9 +171,9 @@ public class OmegaBot extends Robot {
 
         drivetrain.setVelocity(0);
 
-        setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        setDrivetrainToMode(originalMode);
+        drivetrain.setRunMode(originalMode);
     }
 
     /*
@@ -170,7 +182,7 @@ public class OmegaBot extends Robot {
      */
     public void turnUsingGyro(double degrees, double velocity) {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
-        setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double targetHeading = getAngle() + degrees;
         if (degrees > 0) {
             while (targetHeading - getAngle() > errorTolerance) {
@@ -188,7 +200,7 @@ public class OmegaBot extends Robot {
             }
         }
         drivetrain.setVelocity(0);
-        setDrivetrainToMode(originalMode);
+        drivetrain.setRunMode(originalMode);
     }
 
     /**
@@ -200,7 +212,7 @@ public class OmegaBot extends Robot {
      */
     public void turnUsingPID(double degrees, double velocity) {
         DcMotor.RunMode original = frontLeft.getMode(); //assume all drive motors r the same runmode
-        setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double max = velocity;
         double targetHeading = getAngle() + degrees;
         int count = 0;
@@ -217,7 +229,7 @@ public class OmegaBot extends Robot {
             count++;
         }
         drivetrain.setVelocity(0);
-        setDrivetrainToMode(original);
+        drivetrain.setRunMode(original);
     }
 
     /**
@@ -229,7 +241,7 @@ public class OmegaBot extends Robot {
      */
     public void turnUsingPIDVoltage(double degrees, double velocity) {
         DcMotor.RunMode original = frontLeft.getMode(); //assume all drive motors r the same runmode
-        setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double max = 12.0 * velocity;
         double targetHeading = getAngle() + degrees;
         int count = 0;
@@ -246,22 +258,9 @@ public class OmegaBot extends Robot {
             count++;
         }
         drivetrain.setVelocity(0);
-        setDrivetrainToMode(original);
+        drivetrain.setRunMode(original);
     }
 
-
-
-    /**
-     * Set all motors to a runmode
-     *
-     * @param - the run mode
-     */
-    public void setDrivetrainToMode(DcMotor.RunMode runMode) {
-        frontLeft.setMode(runMode);
-        frontRight.setMode(runMode);
-        backLeft.setMode(runMode);
-        backRight.setMode(runMode);
-    }
 
     /**
      * Resets the cumulative angle tracking to zero.

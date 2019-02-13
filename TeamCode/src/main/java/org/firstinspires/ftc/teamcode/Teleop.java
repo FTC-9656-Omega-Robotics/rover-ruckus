@@ -32,8 +32,8 @@ public class Teleop extends OpMode {
     @Override
     public void init() {
         robot = new OmegaBot(telemetry, hardwareMap);
-        robot.setDrivetrainToMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.setDrivetrainToMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
