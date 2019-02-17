@@ -38,6 +38,8 @@ public class Teleop extends OpMode {
         robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.extension.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     /**
@@ -86,43 +88,37 @@ public class Teleop extends OpMode {
         if (gamepad2.a && (robot.extension.getCurrentPosition() >= 2530 && robot.extension.getCurrentPosition() < 4000)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(.63);//.63
             robot.rightFlip.setPosition(.37);//.37
-            long setTime = System.currentTimeMillis();
-            while(System.currentTimeMillis()-setTime<500){}
+            waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1960 && robot.extension.getCurrentPosition() < 2530)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6366);
             robot.rightFlip.setPosition(1 - 0.6366);
-            long setTime = System.currentTimeMillis();
-            while(System.currentTimeMillis()-setTime<500){}
+            waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1390 && robot.extension.getCurrentPosition() < 1960)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6412);
             robot.rightFlip.setPosition(1 - 0.6412);
-            long setTime = System.currentTimeMillis();
-            while(System.currentTimeMillis()-setTime<500){}
+            waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 820 && robot.extension.getCurrentPosition() < 1390)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6458);
             robot.rightFlip.setPosition(1 - 0.6458);
-            long setTime = System.currentTimeMillis();
-            while(System.currentTimeMillis()-setTime<500){}
+            waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 250 && robot.extension.getCurrentPosition() < 820)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6504);
             robot.rightFlip.setPosition(1 - 0.6504);
-            long setTime = System.currentTimeMillis();
-            while(System.currentTimeMillis()-setTime<500){}
+            waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && robot.extension.getCurrentPosition() < 250) {
             robot.leftFlip.setPosition(0.6);
             robot.rightFlip.setPosition(0.4);
-            long setTime = System.currentTimeMillis();
-            while(System.currentTimeMillis()-setTime<500){}
+            waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.b) {
@@ -166,7 +162,14 @@ public class Teleop extends OpMode {
             robot.intake.setPower(0);
         }
 
-        robot.extension.setPower(-gamepad2.left_stick_y);
+        if (gamepad2.x) {
+            robot.extension.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.extension.setTargetPosition(0);
+            robot.extension.setPower(-1);
+        } else {
+            robot.extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.extension.setPower(-gamepad2.left_stick_y);
+        }
 
         telemetry.addData("arm pos", robot.arm.getCurrentPosition());
         telemetry.addData("front_left pos", robot.frontLeft.getCurrentPosition());
@@ -182,6 +185,19 @@ public class Teleop extends OpMode {
 
     private double absMax(double a, double b) { //Returns the argument whose absolute value is greater (similar to Math.max() but compares absolute values)
         return (Math.abs(a) > Math.abs(b)) ? a : b;
+    }
+
+    /**
+     * Tells the thread to wait for a number of seconds. Exception-protected
+     *
+     * @param sec number of sec to wait for
+     */
+    private void waitFor(double sec) {
+        try {
+            Thread.sleep((long) (sec * 1000));
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
 
