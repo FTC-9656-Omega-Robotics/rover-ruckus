@@ -84,28 +84,54 @@ public class Teleop extends OpMode {
 
         //Domains for flip positions when extensions are within a certain range. Domains have length 570. (0.63 - 0.655) / 3100 * 570 = -0.00460
         if (gamepad2.a && (robot.extension.getCurrentPosition() >= 2530 && robot.extension.getCurrentPosition() < 4000)) { //upper bound of 3100 is just pushed to 4000 as safeguard
-            robot.leftFlip.setPosition(0.63);
-            robot.rightFlip.setPosition(0.37);
+            robot.leftFlip.setPosition(.63);//.63
+            robot.rightFlip.setPosition(.37);//.37
+            long setTime = System.currentTimeMillis();
+            while(System.currentTimeMillis()-setTime<500){}
+            robot.leftFlip.getController().pwmDisable();
+            robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1960 && robot.extension.getCurrentPosition() < 2530)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6366);
             robot.rightFlip.setPosition(1 - 0.6366);
+            long setTime = System.currentTimeMillis();
+            while(System.currentTimeMillis()-setTime<500){}
+            robot.leftFlip.getController().pwmDisable();
+            robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1390 && robot.extension.getCurrentPosition() < 1960)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6412);
             robot.rightFlip.setPosition(1 - 0.6412);
+            long setTime = System.currentTimeMillis();
+            while(System.currentTimeMillis()-setTime<500){}
+            robot.leftFlip.getController().pwmDisable();
+            robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 820 && robot.extension.getCurrentPosition() < 1390)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6458);
             robot.rightFlip.setPosition(1 - 0.6458);
+            long setTime = System.currentTimeMillis();
+            while(System.currentTimeMillis()-setTime<500){}
+            robot.leftFlip.getController().pwmDisable();
+            robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 250 && robot.extension.getCurrentPosition() < 820)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.6504);
             robot.rightFlip.setPosition(1 - 0.6504);
+            long setTime = System.currentTimeMillis();
+            while(System.currentTimeMillis()-setTime<500){}
+            robot.leftFlip.getController().pwmDisable();
+            robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && robot.extension.getCurrentPosition() < 250) {
             robot.leftFlip.setPosition(0.6);
             robot.rightFlip.setPosition(0.4);
+            long setTime = System.currentTimeMillis();
+            while(System.currentTimeMillis()-setTime<500){}
+            robot.leftFlip.getController().pwmDisable();
+            robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.b) {
+            robot.leftFlip.getController().pwmEnable();
             robot.rightFlip.setPosition(0.7);
             robot.leftFlip.setPosition(0.3);
             //Don't let intake completely retract unless 1. extension is fairly in and 2. arm is fairly retracted
         } else if (gamepad2.y && robot.extension.getCurrentPosition() < 200 && robot.arm.getCurrentPosition() < 200) {
+            robot.leftFlip.getController().pwmEnable();
             robot.rightFlip.setPosition(0.9);
             robot.leftFlip.setPosition(0.1);
         }
