@@ -41,11 +41,13 @@ public class OmegaBot extends Robot {
 
     //3.77953-inch diameter wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1); 27 inch turning diameter
     private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI);
-    private final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0/3); //2.0 / 3 is random scale factor
-    private final double errorTolerance = 2; //2 degrees error tolerance
+    private final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0 / 3); //2.0 / 3 is random scale factor
+    private final double turnTolerance = 2; //2 degrees error tolerance
+    private final double driveTolerance = 5;
     Orientation lastAngles = new Orientation();
     BNO055IMU imu;
-    OmegaPID pid;
+    OmegaPID turnPID;
+    OmegaPID drivePID;
     double globalAngle, power = .30, correction;
 
     private double MOVE_CORRECTION_ADDENDUM = 0;
@@ -71,10 +73,10 @@ public class OmegaBot extends Robot {
         // and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
-        parameters.mode                = BNO055IMU.SensorMode.IMU;
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.loggingEnabled      = false;
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
         imu = hardwareMap.get(BNO055IMU.class, "imu1");
 
         imu.initialize(parameters);
@@ -111,34 +113,33 @@ public class OmegaBot extends Robot {
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        pid = new OmegaPID(0.25, 0.00008 , 0.5, errorTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
+        turnPID = new OmegaPID(0.25, 0.00008, 0.5, turnTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
+        drivePID = new OmegaPID(0.25, 0.0001, 0.08, driveTolerance);
     }//.25,.00008,.5
 
 
     public void move(double inches, double velocity) {
-        DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
-        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        drivetrain.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
-        drivetrain.setTargetPosition(ticksPerInch * inches);
-        drivetrain.setVelocity(velocity);
-        int count = 0;
-        while (frontLeft.isBusy() || frontRight.isBusy() || backLeft.isBusy() || backRight.isBusy() && count < 500) {
-            telemetry.addData("Drivetrain is positioning. Count:", count);
-            telemetry.update();
-            count++;
-        }
-        drivetrain.setVelocity(0);
-        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        drivetrain.setRunMode(originalMode);
-    }
-
-    public void moveExp(double inches, double velocity) {
         double target = ticksPerInch * inches;
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
         drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while(target-drivetrain.getAvgEncoderValueOfFrontWheels() > 100) {
-            drivetrain.setVelocity(velocity);
+        while (Math.abs(drivetrain.getAvgEncoderValueOfFrontWheels() - target) > 50) {
+            drivetrain.setVelocity(velocity * inches/(Math.abs(inches)));
+        }
+        drivetrain.setVelocity(0);
+        drivetrain.setRunMode(originalMode);
+    }
+
+    public void movePID(double inches, double velocity) {
+        double target = ticksPerInch * inches;
+        DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
+        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        int count = 0;
+        while (Math.abs(drivetrain.getAvgEncoderValueOfFrontWheels() - target) > driveTolerance) {
+            drivetrain.setVelocity(drivePID.calculatePower(drivetrain.getAvgEncoderValueOfFrontWheels(), target, -velocity, velocity));
+            telemetry.addData("Count", count);
+            telemetry.update();
         }
         drivetrain.setVelocity(0);
         drivetrain.setRunMode(originalMode);
@@ -184,14 +185,14 @@ public class OmegaBot extends Robot {
         drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double targetHeading = getAngle() + degrees;
         if (degrees > 0) {
-            while (targetHeading - getAngle() > errorTolerance) {
+            while (targetHeading - getAngle() > turnTolerance) {
                 frontLeft.setPower(-velocity);
                 backLeft.setPower(-velocity);
                 frontRight.setPower(velocity);
                 backRight.setPower(velocity);
             }
         } else {
-            while (getAngle() - targetHeading > errorTolerance) {
+            while (getAngle() - targetHeading > turnTolerance) {
                 frontLeft.setPower(velocity);
                 backLeft.setPower(velocity);
                 frontRight.setPower(-velocity);
@@ -215,10 +216,10 @@ public class OmegaBot extends Robot {
         double max = velocity;
         double targetHeading = getAngle() + degrees;
         int count = 0;
-        while (Math.abs(targetHeading - getAngle()) > errorTolerance) {
-            velocity = pid.calculatePower(getAngle(), targetHeading, -max, max);
+        while (Math.abs(targetHeading - getAngle()) > turnTolerance) {
+            velocity = turnPID.calculatePower(getAngle(), targetHeading, -max, max);
             telemetry.addData("Count", count);
-            telemetry.addData("Calculated power", pid.getDiagnosticCalculatedPower());
+            telemetry.addData("Calculated power", turnPID.getDiagnosticCalculatedPower());
             telemetry.addData("PID power", velocity);
             telemetry.update();
             frontLeft.setPower(-velocity);
@@ -235,6 +236,7 @@ public class OmegaBot extends Robot {
      * This method makes the robot turn counterclockwise based on gyro values and PID
      * Velocity is always positive. Set neg degrees for clockwise turn
      * pwr in setPower(pwr) is a fraction [-1.0, 1.0] of 12V
+     *
      * @param degrees  desired angle in deg
      * @param velocity max velocity
      */
@@ -244,10 +246,10 @@ public class OmegaBot extends Robot {
         double max = 12.0 * velocity;
         double targetHeading = getAngle() + degrees;
         int count = 0;
-        while (Math.abs(targetHeading - getAngle()) > errorTolerance) {
-            velocity =  (pid.calculatePower(getAngle(), targetHeading, -max, max) / 12.0); //pid.calculatePower() used here will return a voltage
+        while (Math.abs(targetHeading - getAngle()) > turnTolerance) {
+            velocity = (turnPID.calculatePower(getAngle(), targetHeading, -max, max) / 12.0); //turnPID.calculatePower() used here will return a voltage
             telemetry.addData("Count", count);
-            telemetry.addData("Calculated velocity [-1.0, 1/0]", pid.getDiagnosticCalculatedPower() / 12.0);
+            telemetry.addData("Calculated velocity [-1.0, 1/0]", turnPID.getDiagnosticCalculatedPower() / 12.0);
             telemetry.addData("PID power [-1.0, 1.0]", velocity);
             telemetry.update();
             frontLeft.setPower(-velocity);
@@ -272,10 +274,10 @@ public class OmegaBot extends Robot {
 
     /**
      * Get current cumulative angle rotation from last reset.
+     *
      * @return Angle in degrees. + = left, - = right.
      */
-    public double getAngle()
-    {
+    public double getAngle() {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
@@ -345,7 +347,7 @@ public class OmegaBot extends Robot {
         return ticksPerInch;
     }
 
-    public double getErrorTolerance() {
-        return errorTolerance;
+    public double getTurnTolerance() {
+        return turnTolerance;
     }
 }

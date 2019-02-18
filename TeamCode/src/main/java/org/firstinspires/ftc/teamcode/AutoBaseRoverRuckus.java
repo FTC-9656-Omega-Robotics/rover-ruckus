@@ -147,10 +147,10 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         double max = 12.0 * velocity;
         double targetHeading = robot.getAngle() + degrees;
         int count = 0;
-        while (opModeIsActive() && Math.abs(targetHeading - robot.getAngle()) > robot.getErrorTolerance()) {
-            velocity = (robot.pid.calculatePower(robot.getAngle(), targetHeading, -max, max) / 12.0); //pid.calculatePower() used here will return a voltage
+        while (opModeIsActive() && Math.abs(targetHeading - robot.getAngle()) > robot.getTurnTolerance()) {
+            velocity = (robot.turnPID.calculatePower(robot.getAngle(), targetHeading, -max, max) / 12.0); //turnPID.calculatePower() used here will return a voltage
             telemetry.addData("Count", count);
-            telemetry.addData("Calculated velocity [-1.0, 1/0]", robot.pid.getDiagnosticCalculatedPower() / 12.0);
+            telemetry.addData("Calculated velocity [-1.0, 1/0]", robot.turnPID.getDiagnosticCalculatedPower() / 12.0);
             telemetry.addData("PID power [-1.0, 1.0]", velocity);
             telemetry.update();
             robot.frontLeft.setPower(-velocity);
@@ -177,10 +177,10 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         double max = 12.0 * velocity;
         double targetHeading = robot.getAngle() + degrees;
         int count = 0;
-        while (opModeIsActive() && Math.abs(targetHeading - robot.getAngle()) > robot.getErrorTolerance()) {
-            velocity = (robot.pid.calculatePower(robot.getAngle(), targetHeading, -max, max) / 12.0); //pid.calculatePower() used here will return a voltage
+        while (opModeIsActive() && Math.abs(targetHeading - robot.getAngle()) > robot.getTurnTolerance()) {
+            velocity = (robot.turnPID.calculatePower(robot.getAngle(), targetHeading, -max, max) / 12.0); //turnPID.calculatePower() used here will return a voltage
             telemetry.addData("Count", count);
-            telemetry.addData("Calculated velocity [-1.0, 1/0]", robot.pid.getDiagnosticCalculatedPower() / 12.0);
+            telemetry.addData("Calculated velocity [-1.0, 1/0]", robot.turnPID.getDiagnosticCalculatedPower() / 12.0);
             telemetry.addData("PID power [-1.0, 1.0]", velocity);
             telemetry.update();
             robot.frontLeft.setPower(-velocity);

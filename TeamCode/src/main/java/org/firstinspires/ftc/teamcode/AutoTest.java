@@ -37,6 +37,7 @@ public class AutoTest extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        robot.moveExp(12, 0.2);
+        robot.move(12, 0.2);
+        robot.movePID(12, 0.2);
     }
 }
