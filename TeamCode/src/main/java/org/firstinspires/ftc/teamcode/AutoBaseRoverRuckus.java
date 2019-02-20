@@ -14,7 +14,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
     public double robotSpeed = 0.8;
-    int liftMaxHeight = 3590;
+    int liftMaxHeight = 9672;
     OmegaBot robot;
 
     public void runOpMode() {
@@ -80,7 +80,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
             telemetry.update();
         }
         robot.lift.setPower(0);
-        robot.move(0.6 * Math.sqrt(72), robotSpeed);
+        robot.movePID(0.6 * Math.sqrt(72), robotSpeed);
         //Choose corresponding path
         if (Math.abs(x - 178) < robot.getAUTO_GOLD_RADIUS()) {
             telemetry.addLine("goldCenter() selected.");

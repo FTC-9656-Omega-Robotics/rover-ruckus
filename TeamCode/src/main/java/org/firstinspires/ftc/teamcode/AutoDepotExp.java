@@ -25,44 +25,44 @@ public class AutoDepotExp extends AutoBaseRoverRuckus {
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values
     public void goldLeft() {
         turnUsingPIDVoltage(33, robotSpeed);
-        move(Math.sqrt(1548) - 8, robotSpeed);
+        robot.movePID(Math.sqrt(1548) - 8, robotSpeed);
         turnUsingPIDVoltage(-55, robotSpeed);
-        move(Math.sqrt(1548) - 18, robotSpeed);
+        robot.movePID(Math.sqrt(1548) - 18, robotSpeed);
         robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
         sleep(100);
         robot.teamMarker.setPosition(1);
         sleep(100);
-        move(-(Math.sqrt(1548) - 18), robotSpeed);
+        robot.movePID(-(Math.sqrt(1548) - 18), robotSpeed);
         turnUsingPIDVoltage(55, robotSpeed);
-        move(-(Math.sqrt(1548) - 8), robotSpeed);
+        robot.movePID(-(Math.sqrt(1548) - 8), robotSpeed);
         turnUsingPIDVoltage(-33, robotSpeed);
     }
 
     public void goldCenter() {
-        move(3 * Math.sqrt(72) + 15, robotSpeed);
+        robot.movePID(3 * Math.sqrt(72) + 15, robotSpeed);
         robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
         sleep(1000);
         robot.teamMarker.setPosition(1);
         sleep(1000);
-        move(-(3 * Math.sqrt(72) + 15), robotSpeed);
+        robot.movePID(-(3 * Math.sqrt(72) + 15), robotSpeed);
     }
 
 
     public void goldRight() {
         turnUsingPIDVoltage(-33, robotSpeed);
-        move(Math.sqrt(1548) - 8, robotSpeed);
+        robot.movePID(Math.sqrt(1548) - 8, robotSpeed);
         turnUsingPIDVoltage(55, robotSpeed);
-        move(Math.sqrt(1548) - 18, robotSpeed);
+        robot.movePID(Math.sqrt(1548) - 18, robotSpeed);
         robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
         sleep(100);
         robot.teamMarker.setPosition(1);
         sleep(100);
-        move(-(Math.sqrt(1548) - 18), robotSpeed);
+        robot.movePID(-(Math.sqrt(1548) - 18), robotSpeed);
         turnUsingPIDVoltage(-55, robotSpeed);
-        move(-(Math.sqrt(1548) - 8), robotSpeed);
+        robot.movePID(-(Math.sqrt(1548) - 8), robotSpeed);
         turnUsingPIDVoltage(33, robotSpeed);
     }
 

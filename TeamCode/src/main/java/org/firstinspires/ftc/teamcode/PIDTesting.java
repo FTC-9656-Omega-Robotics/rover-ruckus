@@ -15,7 +15,7 @@ public class PIDTesting extends AutoBaseRoverRuckus {
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.turnUsingPIDVoltage(-90, robotSpeed);
+        robot.movePID(12, robotSpeed-.1);
     }
 
     public void goldLeft(){

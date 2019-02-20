@@ -43,7 +43,7 @@ public class OmegaBot extends Robot {
     private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI);
     private final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0 / 3); //2.0 / 3 is random scale factor
     private final double turnTolerance = 2; //2 degrees error tolerance
-    private final double driveTolerance = 5;
+    private final double driveTolerance = 8;
     Orientation lastAngles = new Orientation();
     BNO055IMU imu;
     OmegaPID turnPID;
@@ -114,7 +114,7 @@ public class OmegaBot extends Robot {
         lift.setMode(myRunMode);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turnPID = new OmegaPID(0.25, 0.00008, 0.5, turnTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
-        drivePID = new OmegaPID(0.25, 0.0001, 0.08, driveTolerance);
+        drivePID = new OmegaPID(0.2, 0.0001, 0.4, driveTolerance);//.25, .0001, .08 has some jitters
     }//.25,.00008,.5
 
 
@@ -131,9 +131,8 @@ public class OmegaBot extends Robot {
     }
 
     public void movePID(double inches, double velocity) {
-        double target = ticksPerInch * inches;
+        double target = ticksPerInch * inches + drivetrain.getAvgEncoderValueOfFrontWheels();
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
-        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         int count = 0;
         while (Math.abs(drivetrain.getAvgEncoderValueOfFrontWheels() - target) > driveTolerance) {
@@ -141,6 +140,8 @@ public class OmegaBot extends Robot {
             telemetry.addData("Count", count);
             telemetry.update();
         }
+        extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        extension.setTargetPosition(0);
         drivetrain.setVelocity(0);
         drivetrain.setRunMode(originalMode);
     }
