@@ -36,10 +36,9 @@ public class Teleop extends OpMode {
         robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.extension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.extension.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.escalator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     /**
@@ -62,11 +61,31 @@ public class Teleop extends OpMode {
         } else if (gamepad1.dpad_down) {
             robot.teamMarker.setPosition(0); //0 is extended
         }
-        if (gamepad1.left_bumper && gamepad1.right_bumper) {
+        if (gamepad1.right_bumper) {
             speedDamper = 1;
         } else {
             speedDamper = 0.55;
         }
+
+        if (gamepad1.a){
+            robot.escalator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.escalator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+
+        if (gamepad1.x){
+            robot.escalator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.escalator.setPower(-1);
+        }else if(gamepad1.right_trigger > 0.2) {
+            robot.escalator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.escalator.setPower(1);
+        }else if(gamepad1.left_trigger > 0.2){
+            robot.escalator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.escalator.setTargetPosition(0);
+            robot.escalator.setPower(-1);
+        }else {
+            robot.escalator.setPower(0);
+        }
+
 
 //        //SIMPLIFIED (comment this block or the one below out Domains for flip positions when extensions are within a certain range
 //        if (gamepad2.a && robot.extension.getCurrentPosition() > 250) {
@@ -126,24 +145,12 @@ public class Teleop extends OpMode {
             robot.rightFlip.setPosition(0.7);
             robot.leftFlip.setPosition(0.3);
             //Don't let intake completely retract unless 1. extension is fairly in and 2. arm is fairly retracted
-        } else if (gamepad2.y && robot.extension.getCurrentPosition() < 200 && robot.arm.getCurrentPosition() < 200) {
+        } else if (gamepad2.y && robot.extension.getCurrentPosition() < 200) {
             robot.leftFlip.getController().pwmEnable();
             robot.rightFlip.setPosition(0.9);
             robot.leftFlip.setPosition(0.1);
         }
 
-        //push buttons for moving arm to set positions
-        if (gamepad2.right_bumper) {
-            int armMaxHeight = 550;
-            robot.arm.setTargetPosition(armMaxHeight);
-            robot.arm.setPower(0.3);
-        }
-
-        if (gamepad2.right_trigger > 0.2) {
-            int armMinHeight = 0;
-            robot.arm.setTargetPosition(armMinHeight);
-            robot.arm.setPower(0.3);
-        }
 
         //gamepad2 will have all the special mechanisms
         if (gamepad2.dpad_up) {
@@ -171,7 +178,7 @@ public class Teleop extends OpMode {
             robot.extension.setPower(-gamepad2.left_stick_y);
         }
 
-        telemetry.addData("arm pos", robot.arm.getCurrentPosition());
+        telemetry.addData("escalator pos", robot.escalator.getCurrentPosition());
         telemetry.addData("front_left pos", robot.frontLeft.getCurrentPosition());
         telemetry.addData("front_right pos", robot.frontRight.getCurrentPosition());
         telemetry.addData("back_left pos", robot.backLeft.getCurrentPosition());
