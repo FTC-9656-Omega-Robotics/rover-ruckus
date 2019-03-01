@@ -47,10 +47,12 @@ public class Teleop extends OpMode {
      */
     @Override
     public void loop() {
-
-//        gamepad2LeftBumper.input(gamepad2.left_bumper); Uncomment and use later for one-button continuous action
-//        gamepad2LeftTrigger.input(gamepad2.left_trigger > 0.2);
-//        gamepad2RightTrigger.input(gamepad2.right_trigger > 0.2);
+        if (gamepad2.right_bumper) {
+            robot.outtake.setPosition(0.55);
+        } else if (gamepad2.right_trigger > 0.2) {
+            robot.outtake.setPosition(0.90);
+        }
+        gamepad2RightTrigger.input(gamepad2.right_trigger > 0.2);
 
         robot.frontLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
         robot.backLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
@@ -69,22 +71,22 @@ public class Teleop extends OpMode {
             speedDamper = 0.55;
         }
 
-        if (gamepad1.a){
+        if (gamepad1.a) {
             robot.escalator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.escalator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
-        if (gamepad1.x){
+        if (gamepad1.x) {
             robot.escalator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.escalator.setPower(-1);
-        }else if(gamepad1.right_trigger > 0.2) {
+        } else if (gamepad1.right_trigger > 0.2) {
             robot.escalator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.escalator.setPower(1);
-        }else if(gamepad1.left_trigger > 0.2){
+        } else if (gamepad1.left_trigger > 0.2) {
             robot.escalator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.escalator.setTargetPosition(0);
             robot.escalator.setPower(-1);
-        }else {
+        } else {
             robot.escalator.setPower(0);
         }
 
@@ -105,52 +107,52 @@ public class Teleop extends OpMode {
 //            robot.leftFlip.setPosition(0.1);
 
 
-        //Domains for flip positions when extensions are within a certain range. Domains have length 570. (0.63 - 0.655) / 3100 * 570 = -0.00460
+        //Domains for flip positions when extensions are within a certain range. Domains have length 570. (0.83 - 0.855) / 3100 * 570 = -0.00460
         if (gamepad2.a && (robot.extension.getCurrentPosition() >= 2530 && robot.extension.getCurrentPosition() < 4000)) { //upper bound of 3100 is just pushed to 4000 as safeguard
-            robot.leftFlip.setPosition(.63);//.63
-            robot.rightFlip.setPosition(.37);//.37
+            robot.leftFlip.setPosition(0.8);//.63
+            robot.rightFlip.setPosition(0.2);//.37
             waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1960 && robot.extension.getCurrentPosition() < 2530)) { //upper bound of 3100 is just pushed to 4000 as safeguard
-            robot.leftFlip.setPosition(0.6366);
-            robot.rightFlip.setPosition(1 - 0.6366);
+            robot.leftFlip.setPosition(0.8);
+            robot.rightFlip.setPosition(0.2);
             waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 1390 && robot.extension.getCurrentPosition() < 1960)) { //upper bound of 3100 is just pushed to 4000 as safeguard
-            robot.leftFlip.setPosition(0.6412);
-            robot.rightFlip.setPosition(1 - 0.6412);
+            robot.leftFlip.setPosition(0.8);
+            robot.rightFlip.setPosition(0.2);
             waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 820 && robot.extension.getCurrentPosition() < 1390)) { //upper bound of 3100 is just pushed to 4000 as safeguard
-            robot.leftFlip.setPosition(0.6458);
-            robot.rightFlip.setPosition(1 - 0.6458);
+            robot.leftFlip.setPosition(0.8);
+            robot.rightFlip.setPosition(0.2);
             waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && (robot.extension.getCurrentPosition() >= 250 && robot.extension.getCurrentPosition() < 820)) { //upper bound of 3100 is just pushed to 4000 as safeguard
-            robot.leftFlip.setPosition(0.6504);
-            robot.rightFlip.setPosition(1 - 0.6504);
+            robot.leftFlip.setPosition(0.8);
+            robot.rightFlip.setPosition(0.2);
             waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.a && robot.extension.getCurrentPosition() < 250) {
-            robot.leftFlip.setPosition(0.6);
-            robot.rightFlip.setPosition(0.4);
+            robot.leftFlip.setPosition(0.8);
+            robot.rightFlip.setPosition(0.2);
             waitFor(0.5);
             robot.leftFlip.getController().pwmDisable();
             robot.rightFlip.getController().pwmDisable();
         } else if (gamepad2.b) {
             robot.leftFlip.getController().pwmEnable();
-            robot.rightFlip.setPosition(0.7);
-            robot.leftFlip.setPosition(0.3);
+            robot.leftFlip.setPosition(0.25);
+            robot.rightFlip.setPosition(0.75);
             //Don't let intake completely retract unless 1. extension is fairly in and 2. arm is fairly retracted
         } else if (gamepad2.y && robot.extension.getCurrentPosition() < 200) {
             robot.leftFlip.getController().pwmEnable();
-            robot.rightFlip.setPosition(0.9);
-            robot.leftFlip.setPosition(0.1);
+            robot.leftFlip.setPosition(0);
+            robot.rightFlip.setPosition(1);
         }
 
 
@@ -164,9 +166,9 @@ public class Teleop extends OpMode {
         }
 
         if (gamepad2.left_trigger > 0.2) {
-            robot.intake.setPower(1);
+            robot.intake.setPower(0.6);
         } else if (gamepad2.left_bumper) {
-            robot.intake.setPower(-1);
+            robot.intake.setPower(-0.6);
         } else {
             robot.intake.setPower(0);
         }

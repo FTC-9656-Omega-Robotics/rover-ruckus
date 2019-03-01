@@ -29,6 +29,7 @@ public class OmegaBot extends Robot {
     public DcMotor lift;
     public DcMotor intake;
     public DcMotor escalator;
+    public Servo outtake;
 
     public Servo leftFlip;
     public Servo rightFlip;
@@ -63,6 +64,7 @@ public class OmegaBot extends Robot {
         extension = hardwareMap.get(DcMotor.class, "extension");
         intake = hardwareMap.get(DcMotor.class, "intake");
         escalator = hardwareMap.get(DcMotor.class, "escalator");
+        outtake = hardwareMap.get(Servo.class, "outtake");
 
         lift = hardwareMap.get(DcMotor.class, "lift");
         leftFlip = hardwareMap.get(Servo.class, "left_flip");
@@ -94,13 +96,14 @@ public class OmegaBot extends Robot {
         frontRight.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         backLeft.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotorSimple.Direction.FORWARD);
         lift.setDirection(DcMotor.Direction.FORWARD);
         extension.setDirection(DcMotorSimple.Direction.FORWARD);
 
         teamMarker.setPosition(0); //0 is retracted; 1 is extended
         leftFlip.setPosition(0);
         rightFlip.setPosition(1);
+        outtake.setPosition(0.95);
 
         intake.setPower(0);
         frontLeft.setPower(0);
