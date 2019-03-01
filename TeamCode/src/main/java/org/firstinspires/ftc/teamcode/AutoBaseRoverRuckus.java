@@ -16,9 +16,11 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
     public double robotSpeed = 0.8;
     int liftMaxHeight = 9672;
     OmegaBot robot;
+    OmegaCamera camLight;
 
     public void runOpMode() {
         robot = new OmegaBot(telemetry, hardwareMap);
+        camLight = new OmegaCamera();
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -38,6 +40,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
 
         waitForStart();
         // Set up detector
+        camLight.flashOn();
         detector = new GoldAlignDetector(); // Create detector
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
         detector.useDefaults(); // Set detector to use default settings
@@ -68,6 +71,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         while (opModeIsActive() && runtime.seconds() < 3) {
             x = (int) detector.getXPosition();
         }
+        camLight.flashOff();
         detector.disable();
         robot.leftFlip.setPosition(0.15);
         robot.rightFlip.setPosition(0.85);

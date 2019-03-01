@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.CameraDevice;
 
 import edu.spa.ftclib.internal.state.ToggleBoolean;
 import edu.spa.ftclib.sample.TestClass;
@@ -46,6 +47,7 @@ public class Teleop extends OpMode {
      */
     @Override
     public void loop() {
+
 //        gamepad2LeftBumper.input(gamepad2.left_bumper); Uncomment and use later for one-button continuous action
 //        gamepad2LeftTrigger.input(gamepad2.left_trigger > 0.2);
 //        gamepad2RightTrigger.input(gamepad2.right_trigger > 0.2);
