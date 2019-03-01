@@ -79,9 +79,11 @@ public class Teleop extends OpMode {
         if (gamepad1.x) {
             robot.escalator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.escalator.setPower(-1);
+            robot.outtake.setPosition(0.80);
         } else if (gamepad1.right_trigger > 0.2) {
             robot.escalator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.escalator.setPower(1);
+            robot.outtake.setPosition(0.80);
         } else if (gamepad1.left_trigger > 0.2) {
             robot.escalator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.escalator.setTargetPosition(0);
@@ -149,7 +151,7 @@ public class Teleop extends OpMode {
             robot.leftFlip.setPosition(0.25);
             robot.rightFlip.setPosition(0.75);
             //Don't let intake completely retract unless 1. extension is fairly in and 2. arm is fairly retracted
-        } else if (gamepad2.y && robot.extension.getCurrentPosition() < 200) {
+        } else if (gamepad2.y /*&& robot.extension.getCurrentPosition() < 200*/) {
             robot.leftFlip.getController().pwmEnable();
             robot.leftFlip.setPosition(0);
             robot.rightFlip.setPosition(1);
@@ -166,9 +168,9 @@ public class Teleop extends OpMode {
         }
 
         if (gamepad2.left_trigger > 0.2) {
-            robot.intake.setPower(0.6);
+            robot.intake.setPower(1);
         } else if (gamepad2.left_bumper) {
-            robot.intake.setPower(-0.6);
+            robot.intake.setPower(-1);
         } else {
             robot.intake.setPower(0);
         }
