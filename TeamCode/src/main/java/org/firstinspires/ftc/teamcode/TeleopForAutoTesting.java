@@ -42,14 +42,14 @@ public class TeleopForAutoTesting extends OpMode {
      */
     @Override
     public void loop() {
-        if(gamepad1.a) {
-            robot.move(12, 0.2);
-        } else if (gamepad1.b) {
-            robot.move(-12, 0.2);
-        } else if (gamepad1.x) {
+        if (gamepad1.a) {
             robot.movePID(12, 0.5);
-        } else if (gamepad1.y) {
+        } else if (gamepad1.b) {
             robot.movePID(-12, 0.5);
+        } else if (gamepad1.x) {
+            robot.turnUsingPIDVoltage(180, 0.5);
+        } else if (gamepad1.y) {
+            robot.turnUsingPIDVoltage(-180, 0.5);
         }
     }
 

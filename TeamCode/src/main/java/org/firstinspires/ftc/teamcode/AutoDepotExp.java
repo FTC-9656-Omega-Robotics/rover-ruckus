@@ -25,45 +25,45 @@ public class AutoDepotExp extends AutoBaseRoverRuckus {
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values
     public void goldLeft() {
         turnUsingPIDVoltage(33, robotSpeed);
-        robot.movePID(Math.sqrt(1548) - 8, robotSpeed);
+        movePID(24, robotSpeed);
         turnUsingPIDVoltage(-55, robotSpeed);
-        robot.movePID(Math.sqrt(1548) - 18, robotSpeed);
+        movePID(35, robotSpeed);
         robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
         sleep(100);
         robot.teamMarker.setPosition(1);
-        sleep(100);
-        robot.movePID(-(Math.sqrt(1548) - 18), robotSpeed);
-        turnUsingPIDVoltage(55, robotSpeed);
-        robot.movePID(-(Math.sqrt(1548) - 8), robotSpeed);
-        turnUsingPIDVoltage(-33, robotSpeed);
+        sleep(1000);
+//        movePID(-(Math.sqrt(1548) - 18), robotSpeed);
+//        turnUsingPIDVoltage(55, robotSpeed);
+//        movePID(-(Math.sqrt(1548) - 8), robotSpeed);
+//        turnUsingPIDVoltage(-33, robotSpeed);
     }
 
     public void goldCenter() {
-        robot.movePID(3 * Math.sqrt(72) + 15, robotSpeed);
+        movePID(22 + 33, robotSpeed);
         robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
         sleep(1000);
         robot.teamMarker.setPosition(1);
         sleep(1000);
-        robot.movePID(-(3 * Math.sqrt(72) + 15), robotSpeed);
+//        movePID(-(3 * Math.sqrt(72) + 15), robotSpeed);
     }
 
-
+    //Test goldRight before goldLeft. then apply reverse to goldLeft.
     public void goldRight() {
-        turnUsingPIDVoltage(-33, robotSpeed);
-        robot.movePID(Math.sqrt(1548) - 8, robotSpeed);
+        turnUsingPIDVoltage(-35, robotSpeed);
+        movePID(24, robotSpeed);
         turnUsingPIDVoltage(55, robotSpeed);
-        robot.movePID(Math.sqrt(1548) - 18, robotSpeed);
+        movePID(27, robotSpeed);
         robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
         sleep(100);
         robot.teamMarker.setPosition(1);
-        sleep(100);
-        robot.movePID(-(Math.sqrt(1548) - 18), robotSpeed);
-        turnUsingPIDVoltage(-55, robotSpeed);
-        robot.movePID(-(Math.sqrt(1548) - 8), robotSpeed);
-        turnUsingPIDVoltage(33, robotSpeed);
+        sleep(1000);
+//        movePID(-(Math.sqrt(1548) - 18), robotSpeed);
+//        turnUsingPIDVoltage(-55, robotSpeed);
+//        movePID(-(Math.sqrt(1548) - 8), robotSpeed);
+//        turnUsingPIDVoltage(33, robotSpeed);
     }
 
     public void finishPath() {

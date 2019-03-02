@@ -108,6 +108,7 @@ public abstract class OpenCVPipeline implements CameraBridgeViewBase.CvCameraVie
      * @throws IllegalStateException if enable() is called before init()
      */
     public void enable() {
+
         if (!initStarted) throw new IllegalStateException("init() needs to be called before an OpenCVPipeline can be enabled!");
         // this is an absolute hack
         try {
@@ -121,6 +122,8 @@ public abstract class OpenCVPipeline implements CameraBridgeViewBase.CvCameraVie
             cameraView.enableView();
             viewDisplay.setCurrentView(context, getCameraView());
         }
+
+
     }
 
 
@@ -159,6 +162,7 @@ public abstract class OpenCVPipeline implements CameraBridgeViewBase.CvCameraVie
     @Override
     public void onCameraViewStarted(int width, int height) {
         // override this if you wish
+
     }
 
     /**

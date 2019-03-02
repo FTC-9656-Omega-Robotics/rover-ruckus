@@ -32,6 +32,13 @@ public class OmegaDriveTrain {
         return (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition()) / 2;
     }
 
+    public int getAvgEncoderValueOfLeftWheels() {
+        return (frontLeft.getCurrentPosition() + backLeft.getCurrentPosition()) / 2;
+    }
+    public int getAvgEncoderValueOfRightWheels() {
+        return (frontRight.getCurrentPosition() + backRight.getCurrentPosition()) / 2;
+    }
+
     /**
      * Set all motors to a runmode
      *

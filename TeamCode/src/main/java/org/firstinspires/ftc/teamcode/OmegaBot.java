@@ -40,19 +40,19 @@ public class OmegaBot extends Robot {
     public ServoActivator rightFlipActivator;
     public OmegaDriveTrain drivetrain;
 
-    //3.77953-inch diameter wheels, 2 wheel rotations per 1 motor rotation; all Andymark NeveRest 40 motors for wheels (1120 ticks per rev for 1:1); 27 inch turning diameter
-    private final double ticksPerInch = (1120 / 2.0) / (3.77953 * Math.PI);
-    private final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0 / 3); //2.0 / 3 is random scale factor
-    private final double turnTolerance = 2; //2 degrees error tolerance
-    private final double driveTolerance = 8;
+    //3.77953-inch diameter wheels, 1 wheel rotations per 1 motor rotation; all Yellow Jacket 19.2:1 motors for wheels (538 ticks per rev for 1:1); 27 inch turning diameter
+    final double ticksPerInch = (538 / 1.0) / (3.77953 * Math.PI);
+    final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0 / 3); //2.0 / 3 is random scale factor
+    final double turnTolerance = 2; //2 degrees error tolerance
+    final double driveTolerance = 8;
     Orientation lastAngles = new Orientation();
     BNO055IMU imu;
-    OmegaPID turnPID;
-    OmegaPID drivePID;
+    public OmegaPID turnPID;
+    public OmegaPID drivePID;
     double globalAngle, power = .30, correction;
 
-    private double MOVE_CORRECTION_ADDENDUM = 0;
-    private double AUTO_GOLD_RADIUS = 110;
+    double MOVE_CORRECTION_ADDENDUM = 0;
+    double AUTO_GOLD_RADIUS = 110;
 
     OmegaBot(Telemetry telemetry, HardwareMap hardwareMap) {
         super(telemetry, hardwareMap);
@@ -116,7 +116,7 @@ public class OmegaBot extends Robot {
         drivetrain.setRunMode(myRunMode);
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
-        turnPID = new OmegaPID(0.25, 0.00008, 0.5, turnTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
+        turnPID = new OmegaPID(0.25, 0.00008, 0.35, turnTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
         drivePID = new OmegaPID(0.2, 0.0001, 0.4, driveTolerance);//.25, .0001, .08 has some jitters
     }//.25,.00008,.5
 
@@ -127,7 +127,7 @@ public class OmegaBot extends Robot {
         drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (Math.abs(drivetrain.getAvgEncoderValueOfFrontWheels() - target) > 50) {
-            drivetrain.setVelocity(velocity * inches/(Math.abs(inches)));
+            drivetrain.setVelocity(velocity * inches / (Math.abs(inches)));
         }
         drivetrain.setVelocity(0);
         drivetrain.setRunMode(originalMode);
@@ -143,8 +143,6 @@ public class OmegaBot extends Robot {
             telemetry.addData("Count", count);
             telemetry.update();
         }
-        extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        extension.setTargetPosition(0);
         drivetrain.setVelocity(0);
         drivetrain.setRunMode(originalMode);
     }
@@ -207,7 +205,9 @@ public class OmegaBot extends Robot {
         drivetrain.setRunMode(originalMode);
     }
 
+
     /**
+     * DO NOT USE THIS METHOD IN COMPETITION. USE THE ONE IN AUTOBASE ROVER RUCKUS ISNTEAD. THIS AND OmegaBot's MOVEPID ARE JUST FOR TESTING PURPOSES.
      * This method makes the robot turn counterclockwise based on gyro values and PID
      * Velocity is always positive. Set neg degrees for clockwise turn
      *
