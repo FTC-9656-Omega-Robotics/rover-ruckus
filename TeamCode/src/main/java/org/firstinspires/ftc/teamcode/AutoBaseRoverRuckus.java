@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public abstract class AutoBaseRoverRuckus extends LinearOpMode {
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
-    public double robotSpeed = 0.5;
+    public double robotSpeed = 0.45;
     int liftMaxHeight = 9600;
     OmegaBot robot;
     OmegaCamera camLight;
@@ -24,7 +24,7 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         drivePID = robot.drivePID;
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //GYRO SETUP
         runtime.reset();
@@ -124,7 +124,8 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         DcMotor.RunMode originalMode = robot.frontLeft.getMode(); //Assume that all wheels have the same runmode
         robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         int count = 0;
-        while (Math.abs(robot.drivetrain.getAvgEncoderValueOfFrontWheels() - target) > robot.driveTolerance && !isStopRequested()) {
+        ElapsedTime runtime = new ElapsedTime();
+        while (opModeIsActive() && runtime.seconds() < robot.driveTimeLimitPer1Foot * inches / 12.0) {
             robot.drivetrain.setVelocity(robot.drivePID.calculatePower(robot.drivetrain.getAvgEncoderValueOfFrontWheels(), target, -velocity, velocity));
             telemetry.addData("Count", count);
             telemetry.update();
@@ -146,11 +147,8 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         DcMotor.RunMode originalMode = robot.frontLeft.getMode(); //Assume that all wheels have the same runmode
         robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         int count = 0;
-        while (
-                (Math.abs(robot.drivetrain.getAvgEncoderValueOfLeftWheels() - leftTarget) > robot.driveTolerance ||
-                        Math.abs(robot.drivetrain.getAvgEncoderValueOfRightWheels() - rightTarget) > robot.driveTolerance) &&
-                        !isStopRequested()
-        ) {
+        ElapsedTime runtime = new ElapsedTime();
+        while (opModeIsActive() && runtime.seconds() < robot.turnTimeLimit) {
             robot.frontLeft.setPower(drivePID.calculatePower(robot.drivetrain.getAvgEncoderValueOfLeftWheels(), leftTarget, -velocity, velocity));
             robot.backLeft.setPower(drivePID.calculatePower(robot.drivetrain.getAvgEncoderValueOfLeftWheels(), leftTarget, -velocity, velocity));
             robot.frontRight.setPower(drivePID.calculatePower(robot.drivetrain.getAvgEncoderValueOfRightWheels(), rightTarget, -velocity, velocity));
@@ -194,7 +192,8 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         double max = 12.0 * velocity;
         double targetHeading = robot.getAngle() + degrees;
         int count = 0;
-        while (opModeIsActive() && Math.abs(targetHeading - robot.getAngle()) > robot.getTurnTolerance()) {
+        ElapsedTime runtime = new ElapsedTime();
+        while (opModeIsActive() && runtime.seconds() < robot.turnTimeLimit) {
             velocity = (robot.turnPID.calculatePower(robot.getAngle(), targetHeading, -max, max) / 12.0); //turnPID.calculatePower() used here will return a voltage
             telemetry.addData("Count", count);
             telemetry.addData("Calculated velocity [-1.0, 1/0]", robot.turnPID.getDiagnosticCalculatedPower() / 12.0);
@@ -225,7 +224,8 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         double max = 12.0 * velocity;
         double targetHeading = robot.getAngle() + degrees;
         int count = 0;
-        while (opModeIsActive() && Math.abs(targetHeading - robot.getAngle()) > robot.getTurnTolerance()) {
+        ElapsedTime runtime = new ElapsedTime();
+        while (opModeIsActive() && runtime.seconds() < robot.turnTimeLimit) {
             velocity = (robot.turnPID.calculatePower(robot.getAngle(), targetHeading, -max, max) / 12.0); //turnPID.calculatePower() used here will return a voltage
             telemetry.addData("Count", count);
             telemetry.addData("Calculated velocity [-1.0, 1/0]", robot.turnPID.getDiagnosticCalculatedPower() / 12.0);

@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -45,6 +45,8 @@ public class OmegaBot extends Robot {
     final double ticksPerDegree = ticksPerInch * 27 * Math.PI / 360.0 * (2.0 / 3); //2.0 / 3 is random scale factor
     final double turnTolerance = 2; //2 degrees error tolerance
     final double driveTolerance = 8;
+    final double turnTimeLimit = 2.5;
+    final double driveTimeLimitPer1Foot = 0.90; //1.5 sec per 12 inches
     Orientation lastAngles = new Orientation();
     BNO055IMU imu;
     public OmegaPID turnPID;
@@ -116,8 +118,8 @@ public class OmegaBot extends Robot {
         drivetrain.setRunMode(myRunMode);
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(myRunMode);
-        turnPID = new OmegaPID(0.25, 0.00008, 0.35, turnTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
-        drivePID = new OmegaPID(0.2, 0.0001, 0.4, driveTolerance);//.25, .0001, .08 has some jitters
+        turnPID = new OmegaPID(0.25, 0.000008, 0.36, turnTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
+        drivePID = new OmegaPID(0.45, 0.0001, 0.395, driveTolerance);//.25, .0001, .08 has some jitters
     }//.25,.00008,.5
 
 
@@ -126,8 +128,20 @@ public class OmegaBot extends Robot {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
         drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (Math.abs(drivetrain.getAvgEncoderValueOfFrontWheels() - target) > 50) {
+        while (Math.abs(drivetrain.getAvgEncoderValueOfBackWheels() - target) > 50) {
             drivetrain.setVelocity(velocity * inches / (Math.abs(inches)));
+        }
+        drivetrain.setVelocity(0);
+        drivetrain.setRunMode(originalMode);
+    }
+
+    public void moveTime(double velocity, double time) {
+        DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
+        drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ElapsedTime runtime = new ElapsedTime();
+        while (runtime.seconds() < time) {
+            drivetrain.setVelocity(velocity);
         }
         drivetrain.setVelocity(0);
         drivetrain.setRunMode(originalMode);
@@ -138,7 +152,8 @@ public class OmegaBot extends Robot {
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
         drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
         int count = 0;
-        while (Math.abs(drivetrain.getAvgEncoderValueOfFrontWheels() - target) > driveTolerance) {
+        ElapsedTime runtime = new ElapsedTime();
+        while (runtime.seconds() < driveTimeLimitPer1Foot * (inches / 12.0)) {
             drivetrain.setVelocity(drivePID.calculatePower(drivetrain.getAvgEncoderValueOfFrontWheels(), target, -velocity, velocity));
             telemetry.addData("Count", count);
             telemetry.update();
@@ -220,7 +235,8 @@ public class OmegaBot extends Robot {
         double max = velocity;
         double targetHeading = getAngle() + degrees;
         int count = 0;
-        while (Math.abs(targetHeading - getAngle()) > turnTolerance) {
+        ElapsedTime runtime = new ElapsedTime();
+        while (runtime.seconds() < turnTimeLimit) {
             velocity = turnPID.calculatePower(getAngle(), targetHeading, -max, max);
             telemetry.addData("Count", count);
             telemetry.addData("Calculated power", turnPID.getDiagnosticCalculatedPower());
@@ -250,7 +266,8 @@ public class OmegaBot extends Robot {
         double max = 12.0 * velocity;
         double targetHeading = getAngle() + degrees;
         int count = 0;
-        while (Math.abs(targetHeading - getAngle()) > turnTolerance) {
+        ElapsedTime runtime = new ElapsedTime();
+        while (runtime.seconds() < turnTimeLimit) {
             velocity = (turnPID.calculatePower(getAngle(), targetHeading, -max, max) / 12.0); //turnPID.calculatePower() used here will return a voltage
             telemetry.addData("Count", count);
             telemetry.addData("Calculated velocity [-1.0, 1/0]", turnPID.getDiagnosticCalculatedPower() / 12.0);

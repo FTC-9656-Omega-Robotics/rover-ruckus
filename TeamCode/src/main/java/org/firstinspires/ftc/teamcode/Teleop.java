@@ -49,10 +49,9 @@ public class Teleop extends OpMode {
     public void loop() {
         if (gamepad2.right_bumper) {
             robot.outtake.setPosition(0.55);
-        } else if (gamepad2.right_trigger > 0.2) {
+        } else if (gamepad1.right_bumper) {
             robot.outtake.setPosition(0.90);
         }
-        gamepad2RightTrigger.input(gamepad2.right_trigger > 0.2);
 
         robot.frontLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
         robot.backLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
@@ -81,6 +80,10 @@ public class Teleop extends OpMode {
             robot.escalator.setPower(-1);
             robot.outtake.setPosition(0.80);
         } else if (gamepad1.right_trigger > 0.2) {
+            //put B
+            robot.leftFlip.getController().pwmEnable();
+            robot.leftFlip.setPosition(0.25);
+            robot.rightFlip.setPosition(0.75);
             robot.escalator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.escalator.setPower(1);
             robot.outtake.setPosition(0.80);
@@ -155,6 +158,7 @@ public class Teleop extends OpMode {
             robot.leftFlip.getController().pwmEnable();
             robot.leftFlip.setPosition(0);
             robot.rightFlip.setPosition(1);
+            robot.intake.setPower(1);
         }
 
 
@@ -194,6 +198,7 @@ public class Teleop extends OpMode {
         telemetry.addData("team_marker", robot.teamMarker.getPosition());
         telemetry.addData("lift", robot.lift.getCurrentPosition());
         telemetry.addData("extension", robot.extension.getCurrentPosition());
+        telemetry.addData("heading", robot.getAngle());
     }
 
     private double absMax(double a, double b) { //Returns the argument whose absolute value is greater (similar to Math.max() but compares absolute values)

@@ -43,14 +43,18 @@ public class TeleopForAutoTesting extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.a) {
-            robot.movePID(12, 0.5);
+            robot.move(24, 0.3);
         } else if (gamepad1.b) {
-            robot.movePID(-12, 0.5);
+            robot.move(-24, 0.3);
         } else if (gamepad1.x) {
-            robot.turnUsingPIDVoltage(180, 0.5);
+            robot.turnUsingPIDVoltage(90, 0.3);
         } else if (gamepad1.y) {
-            robot.turnUsingPIDVoltage(-180, 0.5);
+            robot.turnUsingPIDVoltage(-90, 0.3);
         }
+        telemetry.addData("front_left pos", robot.frontLeft.getCurrentPosition());
+        telemetry.addData("front_right pos", robot.frontRight.getCurrentPosition());
+        telemetry.addData("back_left pos", robot.backLeft.getCurrentPosition());
+        telemetry.addData("back_right pos", robot.backRight.getCurrentPosition());
     }
 
     private double absMax(double a, double b) { //Returns the argument whose absolute value is greater (similar to Math.max() but compares absolute values)

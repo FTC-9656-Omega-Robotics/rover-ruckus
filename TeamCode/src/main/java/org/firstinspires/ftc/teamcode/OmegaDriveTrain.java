@@ -32,9 +32,14 @@ public class OmegaDriveTrain {
         return (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition()) / 2;
     }
 
+    public int getAvgEncoderValueOfBackWheels() {
+        return (backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / 2;
+    }
+
     public int getAvgEncoderValueOfLeftWheels() {
         return (frontLeft.getCurrentPosition() + backLeft.getCurrentPosition()) / 2;
     }
+
     public int getAvgEncoderValueOfRightWheels() {
         return (frontRight.getCurrentPosition() + backRight.getCurrentPosition()) / 2;
     }
@@ -50,8 +55,10 @@ public class OmegaDriveTrain {
         backLeft.setMode(runMode);
         backRight.setMode(runMode);
     }
+
     /**
      * Set the velocity of all the wheels
+     *
      * @param velocity - a number between -1.0 and 1.0
      */
     public void setVelocity(double velocity) {
@@ -60,6 +67,7 @@ public class OmegaDriveTrain {
         backLeft.setPower(velocity);
         backRight.setPower(velocity);
     }
+
     /**
      * Use as loop condition to wait for drivetrain to finish positioning before moving onto the rest of the code
      */

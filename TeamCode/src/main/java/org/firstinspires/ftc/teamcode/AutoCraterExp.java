@@ -22,8 +22,8 @@ public class AutoCraterExp extends AutoBaseRoverRuckus {
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values {null--none, 100, 315}
     //give up on depositing marker into depot. just parking into crater bc of time constraints.
     public void goldLeft() {
-        turnUsingPIDVoltage(33, robotSpeed);
-        movePID(Math.sqrt(1548) - 6, robotSpeed);
+        turnUsingPIDVoltage(32, robotSpeed);
+        movePID(Math.sqrt(1548) - 8, robotSpeed);
         robot.leftFlip.setPosition(0.5);
         robot.rightFlip.setPosition(0.5);
         sleep(2000);
@@ -44,8 +44,8 @@ public class AutoCraterExp extends AutoBaseRoverRuckus {
     }
 
     public void goldRight() {
-        turnUsingPIDVoltage(-33, robotSpeed);
-        movePID(Math.sqrt(1548) - 6, robotSpeed);
+        turnUsingPIDVoltage(-32, robotSpeed);
+        movePID(Math.sqrt(1548) - 8, robotSpeed);
         robot.leftFlip.setPosition(0.5);
         robot.rightFlip.setPosition(0.5);
         sleep(2000);
