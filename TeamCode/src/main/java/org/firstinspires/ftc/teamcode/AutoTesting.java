@@ -4,22 +4,23 @@ package org.firstinspires.ftc.teamcode;
  * Created by tvt on 9/21/17.
  */
 
-import com.disnodeteam.dogecv.CameraViewDisplay;
-import com.disnodeteam.dogecv.DogeCV;
-import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "AutoDepotExp", group = "Testers")
+@Autonomous(name = "AutoTesting", group = "Testers")
 //@Disabled
 
-public class AutoDepotExp extends AutoBaseRoverRuckus {
+public class AutoTesting extends AutoBaseRoverRuckus {
 
     @Override
     public void runOpMode() {
-        super.runOpMode();
+        robot = new OmegaBot(telemetry, hardwareMap);
+        drivePID = robot.drivePID;
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        waitForStart();
+        movePID(-12, 1);
     }
 
     //preset paths based on where the gold cube is located (left, center, right) based on approximate x values

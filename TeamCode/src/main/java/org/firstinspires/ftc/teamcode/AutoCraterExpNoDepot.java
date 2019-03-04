@@ -6,12 +6,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "AutoCraterExp", group = "Testers")
+@Autonomous(name = "AutoCraterExpNoDepot", group = "Testers")
 //@Disabled
 /**
  * Note that methods called that are not prefixed by "robot." involve loops and thus, on the backorder of things (abstraction), check for opModeIsActive()
  */
-public class AutoCraterExp extends AutoBaseRoverRuckus {
+public class AutoCraterExpNoDepot extends AutoBaseRoverRuckus {
 
 
     @Override
@@ -23,14 +23,13 @@ public class AutoCraterExp extends AutoBaseRoverRuckus {
     //give up on depositing marker into depot. just parking into crater bc of time constraints.
     public void goldLeft() {
         turnUsingPIDVoltage(32, robotSpeed);
-        movePID(Math.sqrt(1548) - 10, robotSpeed);
-        sleep(1000);
-        turnUsingPIDVoltage(110, robotSpeed);
-        move(13, robotSpeed);
-        turnUsingPIDVoltage(5, robotSpeed);
-        movePID(65, robotSpeed);
-        depositMarker();
-        robot.movePID(-68, 1);
+        movePID(Math.sqrt(1548) - 8, robotSpeed);
+        robot.leftFlip.setPosition(0.5);
+        robot.rightFlip.setPosition(0.5);
+        sleep(2000);
+//        movePID(-(Math.sqrt(1548)), robotSpeed);
+//        turnUsingPIDVoltage(18.620, robotSpeed);
+//        movePID(Math.sqrt(1332), robotSpeed);
     }
 
     public void goldCenter() {

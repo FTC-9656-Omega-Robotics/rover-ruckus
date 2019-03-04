@@ -158,7 +158,6 @@ public class Teleop extends OpMode {
             robot.leftFlip.getController().pwmEnable();
             robot.leftFlip.setPosition(0);
             robot.rightFlip.setPosition(1);
-            robot.intake.setPower(1);
         }
 
 
@@ -173,7 +172,7 @@ public class Teleop extends OpMode {
 
         if (gamepad2.left_trigger > 0.2) {
             robot.intake.setPower(1);
-        } else if (gamepad2.left_bumper) {
+        } else if (gamepad2.left_bumper || gamepad2.y) {
             robot.intake.setPower(-1);
         } else {
             robot.intake.setPower(0);

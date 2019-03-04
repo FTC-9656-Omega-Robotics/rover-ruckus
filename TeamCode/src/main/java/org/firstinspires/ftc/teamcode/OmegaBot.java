@@ -148,12 +148,12 @@ public class OmegaBot extends Robot {
     }
 
     public void movePID(double inches, double velocity) {
-        double target = ticksPerInch * inches + drivetrain.getAvgEncoderValueOfFrontWheels();
         DcMotor.RunMode originalMode = frontLeft.getMode(); //Assume that all wheels have the same runmode
         drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double target = ticksPerInch * inches + drivetrain.getAvgEncoderValueOfFrontWheels();
         int count = 0;
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < driveTimeLimitPer1Foot * (inches / 12.0)) {
+        while (runtime.seconds() < Math.abs(driveTimeLimitPer1Foot * (inches / 12.0))) {
             drivetrain.setVelocity(drivePID.calculatePower(drivetrain.getAvgEncoderValueOfFrontWheels(), target, -velocity, velocity));
             telemetry.addData("Count", count);
             telemetry.update();

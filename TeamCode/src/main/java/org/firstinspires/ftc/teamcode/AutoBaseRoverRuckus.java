@@ -120,12 +120,12 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
     }
 
     public void movePID(double inches, double velocity) {
-        double target = robot.ticksPerInch * inches + robot.drivetrain.getAvgEncoderValueOfFrontWheels();
         DcMotor.RunMode originalMode = robot.frontLeft.getMode(); //Assume that all wheels have the same runmode
         robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double target = robot.ticksPerInch * inches + robot.drivetrain.getAvgEncoderValueOfFrontWheels();
         int count = 0;
         ElapsedTime runtime = new ElapsedTime();
-        while (opModeIsActive() && runtime.seconds() < robot.driveTimeLimitPer1Foot * inches / 12.0) {
+        while (opModeIsActive() && runtime.seconds() < Math.abs(robot.driveTimeLimitPer1Foot * inches / 12.0)) {
             robot.drivetrain.setVelocity(robot.drivePID.calculatePower(robot.drivetrain.getAvgEncoderValueOfFrontWheels(), target, -velocity, velocity));
             telemetry.addData("Count", count);
             telemetry.update();
@@ -239,6 +239,17 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         }
         robot.drivetrain.setVelocity(0);
         robot.drivetrain.setRunMode(original);
+    }
+
+    public void depositMarker() {
+        robot.leftFlip.setPosition(0.6);
+        robot.rightFlip.setPosition(0.4);
+        sleep(500);
+        robot.teamMarker.setPosition(1);
+        sleep(500);
+        robot.teamMarker.setPosition(0);
+        robot.leftFlip.setPosition(0);
+        robot.rightFlip.setPosition(1);
     }
 
     abstract public void goldLeft();
