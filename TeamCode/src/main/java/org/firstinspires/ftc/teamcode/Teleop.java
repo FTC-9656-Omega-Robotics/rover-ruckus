@@ -35,11 +35,11 @@ public class Teleop extends OpMode {
         robot = new OmegaBot(telemetry, hardwareMap);
         robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        /*robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.extension.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.escalator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);*/
     }
 
     /**
@@ -47,11 +47,11 @@ public class Teleop extends OpMode {
      */
     @Override
     public void loop() {
-        if (gamepad2.right_bumper) {
+        /*if (gamepad2.right_bumper) {
             robot.outtake.setPosition(0.55);
         } else if (gamepad1.right_bumper) {
             robot.outtake.setPosition(0.90);
-        }
+        }*/
 
         robot.frontLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
         robot.backLeft.setPower(-1 * speedDamper * gamepad1.left_stick_y);
@@ -59,18 +59,18 @@ public class Teleop extends OpMode {
         robot.frontRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
         robot.backRight.setPower(-1 * speedDamper * gamepad1.right_stick_y);
 
-        if (gamepad1.dpad_up) {
+        /*if (gamepad1.dpad_up) {
             robot.teamMarker.setPosition(0.9); //0.9 is rest
         } else if (gamepad1.dpad_down) {
             robot.teamMarker.setPosition(0); //0 is extended
-        }
+        }*/
         if (gamepad1.right_bumper) {
             speedDamper = 1;
         } else {
             speedDamper = 0.55;
         }
 
-        if (gamepad1.a) {
+        /*if (gamepad1.a) {
             robot.escalator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.escalator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
@@ -93,7 +93,7 @@ public class Teleop extends OpMode {
             robot.escalator.setPower(-1);
         } else {
             robot.escalator.setPower(0);
-        }
+        }*/
 
 
 //        //SIMPLIFIED (comment this block or the one below out Domains for flip positions when extensions are within a certain range
@@ -113,7 +113,7 @@ public class Teleop extends OpMode {
 
 
         //Domains for flip positions when extensions are within a certain range. Domains have length 570. (0.83 - 0.855) / 3100 * 570 = -0.00460
-        if (gamepad2.a && (robot.extension.getCurrentPosition() >= 2530 && robot.extension.getCurrentPosition() < 4000)) { //upper bound of 3100 is just pushed to 4000 as safeguard
+        /*if (gamepad2.a && (robot.extension.getCurrentPosition() >= 2530 && robot.extension.getCurrentPosition() < 4000)) { //upper bound of 3100 is just pushed to 4000 as safeguard
             robot.leftFlip.setPosition(0.8);//.63
             robot.rightFlip.setPosition(0.2);//.37
             waitFor(0.5);
@@ -154,7 +154,7 @@ public class Teleop extends OpMode {
             robot.leftFlip.setPosition(0.25);
             robot.rightFlip.setPosition(0.75);
             //Don't let intake completely retract unless 1. extension is fairly in and 2. arm is fairly retracted
-        } else if (gamepad2.y /*&& robot.extension.getCurrentPosition() < 200*/) {
+        } else if (gamepad2.y *//*&& robot.extension.getCurrentPosition() < 200*//*) {
             robot.leftFlip.getController().pwmEnable();
             robot.leftFlip.setPosition(0);
             robot.rightFlip.setPosition(1);
@@ -198,7 +198,11 @@ public class Teleop extends OpMode {
         telemetry.addData("team_marker", robot.teamMarker.getPosition());
         telemetry.addData("lift", robot.lift.getCurrentPosition());
         telemetry.addData("extension", robot.extension.getCurrentPosition());
-        telemetry.addData("heading", robot.getAngle());
+        telemetry.addData("heading", robot.getAngle());*/
+        telemetry.addData("front_left pos", robot.frontLeft.getCurrentPosition());
+        telemetry.addData("front_right pos", robot.frontRight.getCurrentPosition());
+        telemetry.addData("back_left pos", robot.backLeft.getCurrentPosition());
+        telemetry.addData("back_right pos", robot.backRight.getCurrentPosition());
     }
 
     private double absMax(double a, double b) { //Returns the argument whose absolute value is greater (similar to Math.max() but compares absolute values)

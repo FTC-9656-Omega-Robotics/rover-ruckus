@@ -22,7 +22,9 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
     public void runOpMode() {
         robot = new OmegaBot(telemetry, hardwareMap);
         drivePID = robot.drivePID;
+/*
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+*/
         robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -63,26 +65,26 @@ public abstract class AutoBaseRoverRuckus extends LinearOpMode {
         telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
         telemetry.addData("Initialization", "Complete");
         telemetry.update();
-
+/*
         robot.leftFlip.setPosition(0.85);
-        robot.rightFlip.setPosition(0.15);
+        robot.rightFlip.setPosition(0.15);*/
         int x = 0;
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < 3.5) {
             x = (int) detector.getXPosition();
         }
         detector.disable();
-        robot.leftFlip.setPosition(0.15);
-        robot.rightFlip.setPosition(0.85);
+        /*robot.leftFlip.setPosition(0.15);
+        robot.rightFlip.setPosition(0.85);*/
         runtime.reset();
-        robot.lift.setTargetPosition(-liftMaxHeight);
-        robot.lift.setPower(-1);
+        /*robot.lift.setTargetPosition(-liftMaxHeight);
+        robot.lift.setPower(-1);*/
         runtime.reset();
-        while (opModeIsActive() && robot.lift.isBusy() && robot.lift.getCurrentPosition() < liftMaxHeight && runtime.seconds() < 5) {
+        /*while (opModeIsActive() && robot.lift.isBusy() && robot.lift.getCurrentPosition() < liftMaxHeight && runtime.seconds() < 5) {
             telemetry.addData("lift", robot.lift.getCurrentPosition());
             telemetry.update();
-        }
-        robot.lift.setPower(0);
+        }*/
+        /*robot.lift.setPower(0);*/
         movePID(0.6 * Math.sqrt(72), robotSpeed);
         //Choose corresponding path
         if (Math.abs(x - 178) < robot.getAUTO_GOLD_RADIUS()) {

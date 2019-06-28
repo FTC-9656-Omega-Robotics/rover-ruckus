@@ -24,34 +24,34 @@ public class AutoCraterExp extends AutoBaseRoverRuckus {
     public void goldLeft() {
         turnUsingPIDVoltage(32, robotSpeed);
         movePID(Math.sqrt(1548) - 8, robotSpeed);
-        robot.leftFlip.setPosition(0.5);
+        /*robot.leftFlip.setPosition(0.5);
         robot.rightFlip.setPosition(0.5);
         sleep(2000);
 //        movePID(-(Math.sqrt(1548)), robotSpeed);
 //        turnUsingPIDVoltage(18.620, robotSpeed);
-//        movePID(Math.sqrt(1332), robotSpeed);
+//        movePID(Math.sqrt(1332), robotSpeed);*/
     }
 
     public void goldCenter() {
         movePID(3 * Math.sqrt(72) - 6, robotSpeed);
-        robot.leftFlip.setPosition(0.5);
+        /*robot.leftFlip.setPosition(0.5);
         robot.rightFlip.setPosition(0.5);
         sleep(2000);
 //        movePID(-(3 * Math.sqrt(72) - 2), robotSpeed);
 //        turnUsingPIDVoltage(52, robotSpeed);
 //        movePID(Math.sqrt(1332) + 5, robotSpeed); // addendum
-//        turnUsingPIDVoltage(78, robotSpeed); // a rough guess
+//        turnUsingPIDVoltage(78, robotSpeed); // a rough guess*/
     }
 
     public void goldRight() {
         turnUsingPIDVoltage(-32, robotSpeed);
         movePID(Math.sqrt(1548) - 8, robotSpeed);
-        robot.leftFlip.setPosition(0.5);
+        /*robot.leftFlip.setPosition(0.5);
         robot.rightFlip.setPosition(0.5);
         sleep(2000);
 //        movePID(-(Math.sqrt(1548)), robotSpeed);
 //        robot.turnUsingPIDVoltage(2 * 49.684 + 22.620, robotSpeed);
-
+*/
     }
 
     /**
@@ -60,9 +60,9 @@ public class AutoCraterExp extends AutoBaseRoverRuckus {
      */
     public void finishPath() {
         movePID(Math.sqrt(3636), robotSpeed);
-        robot.teamMarker.setPosition(0); // 0 is retracted, 0.9 is extended
+        /*robot.teamMarker.setPosition(0); // 0 is retracted, 0.9 is extended
         sleep(1000);
-        robot.teamMarker.setPosition(0.9);
+        robot.teamMarker.setPosition(0.9);*/
         turnUsingPIDVoltage(-174.289, robotSpeed);
         movePID(90, robotSpeed);
     }

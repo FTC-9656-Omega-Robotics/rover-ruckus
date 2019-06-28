@@ -28,7 +28,7 @@ public class AutoDepotExp extends AutoBaseRoverRuckus {
         movePID(28, robotSpeed);
         turnUsingPIDVoltage(-58, robotSpeed);
         movePID(29, robotSpeed);
-        robot.leftFlip.setPosition(0.6);
+        /*robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
         sleep(500);
         robot.teamMarker.setPosition(1);
@@ -37,22 +37,29 @@ public class AutoDepotExp extends AutoBaseRoverRuckus {
 
         //go for crater
         robot.leftFlip.setPosition(0);
-        robot.rightFlip.setPosition(1);
+        robot.rightFlip.setPosition(1);*/
         robot.move(-8, robotSpeed);
         robot.turnUsingPIDVoltage(170, robotSpeed);
         robot.move(65, robotSpeed);
-        robot.leftFlip.setPosition(0.6);
-        robot.rightFlip.setPosition(0.4);
+        /*robot.leftFlip.setPosition(0.6);
+        robot.rightFlip.setPosition(0.4);*/
     }
 
     public void goldCenter() {
         movePID(39, robotSpeed);
-        robot.leftFlip.setPosition(0.6);
+        /*robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
         sleep(1000);
         robot.teamMarker.setPosition(1);
         sleep(1000);
         robot.teamMarker.setPosition(0);
+        sleep(1000);
+        robot.rightFlip.setPosition(0.25);
+        robot.leftFlip.setPosition(0.75);*/
+        movePID(-39,robotSpeed);
+        turnUsingPIDVoltage(90, robotSpeed);
+        movePID(32,robotSpeed);
+        turnUsingPIDVoltage(45, robotSpeed);
 //        movePID(-(3 * Math.sqrt(72) + 15), robotSpeed);
     }
 
@@ -62,12 +69,12 @@ public class AutoDepotExp extends AutoBaseRoverRuckus {
         movePID(24, robotSpeed);
         turnUsingPIDVoltage(63, robotSpeed);
         movePID(29, robotSpeed);
-        robot.leftFlip.setPosition(0.6);
+        /*robot.leftFlip.setPosition(0.6);
         robot.rightFlip.setPosition(0.4);
         sleep(100);
         robot.teamMarker.setPosition(1);
         sleep(1000);
-        robot.teamMarker.setPosition(0);
+        robot.teamMarker.setPosition(0);*/
 //        movePID(-(Math.sqrt(1548) - 18), robotSpeed);
 //        turnUsingPIDVoltage(-55, robotSpeed);
 //        movePID(-(Math.sqrt(1548) - 8), robotSpeed);

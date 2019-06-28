@@ -92,14 +92,14 @@ public class GoldAlignExample extends OpMode {
      */
     @Override
     public void loop() {
-        if (gamepad1.a) {
+        /*if (gamepad1.a) {
             robot.rightFlip.setPosition(0.35);
             robot.leftFlip.setPosition(0.65);
         }
         telemetry.addData("IsAligned", detector.getAligned()); // Is the bot aligned with the gold mineral?
         telemetry.addData("X Pos", detector.getXPosition()); // Gold X position.
         telemetry.addData("left_flip pos", robot.leftFlip.getPosition());
-        telemetry.addData("right_flip pos", robot.rightFlip.getPosition());
+        telemetry.addData("right_flip pos", robot.rightFlip.getPosition());*/
     }
 
     /*

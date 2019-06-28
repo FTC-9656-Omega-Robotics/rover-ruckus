@@ -31,10 +31,10 @@ public class TeleopForAutoTesting extends OpMode {
         robot = new OmegaBot(telemetry, hardwareMap);
         robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        /*robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.extension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.extension.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extension.setMode(DcMotor.RunMode.RUN_TO_POSITION);*/
     }
 
     /**
