@@ -25,19 +25,8 @@ public class OmegaBot extends Robot {
     public DcMotor frontRight;
     public DcMotor backLeft;
     public DcMotor backRight;
-    /*public DcMotor extension;
-    public DcMotor lift;
-    public DcMotor intake;
-    public DcMotor escalator;
-    public Servo outtake;
-
-    public Servo leftFlip;
-    public Servo rightFlip;
-    public Servo teamMarker;*/
 
     DcMotor.RunMode myRunMode = DcMotor.RunMode.RUN_TO_POSITION;
-    public ServoActivator leftFlipActivator;
-    public ServoActivator rightFlipActivator;
     public OmegaDriveTrain drivetrain;
 
     //3.77953-inch diameter wheels, 1 wheel rotations per 1 motor rotation; all Yellow Jacket 19.2:1 motors for wheels (538 ticks per rev for 1:1); 27 inch turning diameter
@@ -63,15 +52,6 @@ public class OmegaBot extends Robot {
         frontRight = hardwareMap.get(DcMotor.class, "rightFront");
         backLeft = hardwareMap.get(DcMotor.class, "leftRear");
         backRight = hardwareMap.get(DcMotor.class, "rightRear");
-        /*extension = hardwareMap.get(DcMotor.class, "extension");
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        escalator = hardwareMap.get(DcMotor.class, "escalator");
-        outtake = hardwareMap.get(Servo.class, "outtake");
-
-        lift = hardwareMap.get(DcMotor.class, "lift");
-        leftFlip = hardwareMap.get(Servo.class, "left_flip");
-        rightFlip = hardwareMap.get(Servo.class, "right_flip");
-        teamMarker = hardwareMap.get(Servo.class, "team_marker");*/
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
         // and named "imu1".
@@ -89,35 +69,19 @@ public class OmegaBot extends Robot {
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        /*lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        extension.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        escalator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);*/
 
         frontLeft.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         frontRight.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         backLeft.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
-        /*intake.setDirection(DcMotorSimple.Direction.FORWARD);
-        lift.setDirection(DcMotor.Direction.FORWARD);
-        extension.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        teamMarker.setPosition(0); //0 is retracted; 1 is extended
-        leftFlip.setPosition(0);
-        rightFlip.setPosition(1);
-        outtake.setPosition(0.95);
-
-        intake.setPower(0);*/
         frontLeft.setPower(0);
         frontRight.setPower(0);
         backLeft.setPower(0);
         backRight.setPower(0);
-       /* lift.setPower(0);*/
 
         drivetrain = new OmegaDriveTrain(frontLeft, frontRight, backLeft, backRight);
         drivetrain.setRunMode(myRunMode);
-        /*lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift.setMode(myRunMode);*/
         turnPID = new OmegaPID(0.25, 0.000008, 0.36, turnTolerance); //0.015, 0.00008, 0.05 work for robotSpeed = 0.6. now tuning for 1.0
         drivePID = new OmegaPID(0.45, 0.0001, 0.395, driveTolerance);//.25, .0001, .08 has some jitters
     }//.25,.00008,.5
